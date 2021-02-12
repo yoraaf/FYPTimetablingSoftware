@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="DNA&lt;T&gt;">
+    <Position X="3.75" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAMgAAAAAAAAAAAAABEAAAAgAAAAAAAACAQAAEAAAAA=</HashCode>
+      <FileName>DNA.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GATest01.Form1">
+    <Position X="6.75" Y="3.5" Width="1.5" />
+    <Members>
+      <Field Name="AllMembersBox" Hidden="true" />
+      <Field Name="bestGeneBox" Hidden="true" />
+      <Field Name="components" Hidden="true" />
+      <Method Name="Dispose" Hidden="true" />
+      <Field Name="fitnessChart" Hidden="true" />
+      <Field Name="fitnessLbl" Hidden="true" />
+      <Method Name="Form1" Hidden="true" />
+      <Method Name="Form1_Load" Hidden="true" />
+      <Field Name="generationLbl" Hidden="true" />
+      <Field Name="graphDataTextBox" Hidden="true" />
+      <Method Name="InitializeComponent" Hidden="true" />
+      <Field Name="label1" Hidden="true" />
+      <Field Name="label2" Hidden="true" />
+      <Method Name="label2_Click" Hidden="true" />
+      <Field Name="label3" Hidden="true" />
+      <Method Name="label3_Click" Hidden="true" />
+      <Field Name="label4" Hidden="true" />
+      <Field Name="pauseButton" Hidden="true" />
+      <Field Name="resumeButton" Hidden="true" />
+      <Field Name="startButton" Hidden="true" />
+      <Field Name="targetTextBox" Hidden="true" />
+    </Members>
+    <NestedTypes>
+      <Delegate Name="GATest01.Form1.SafeTextEdit" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Form1.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>QABIwgQKACgMCJAAggSQCIADiAAKARAAaEQBEgAEAGA=</HashCode>
+      <FileName>Form1.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GeneticAlgorithm&lt;T&gt;">
+    <Position X="12" Y="3.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACCAAQAAACIABEAIAAoAAAAAABCAAQAACgAABI=</HashCode>
+      <FileName>GeneticAlgorithm.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GATest01.Program">
+    <Position X="8.5" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GATest01.Klas">
+    <Position X="10" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Klas.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
