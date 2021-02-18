@@ -11,8 +11,9 @@ using System.Windows.Forms;
 using System.Windows.Threading;
 using System.Timers;
 using System.Windows.Forms.DataVisualization.Charting;
+using System.IO;
 
-namespace GATest01 {
+namespace FYPTimetablingSoftware {
     public partial class Form1 : Form {
         private delegate void SafeTextEdit(char[] bestGenes, float bestFitness, int generation, int populationSize);
         Dispatcher GUIDispatcher;
@@ -180,5 +181,10 @@ namespace GATest01 {
 
         }
 
+        private void XMLTestButton_Click(object sender, EventArgs e) {
+            string workingDirectory = Environment.CurrentDirectory;
+            string projectDirectory = Directory.GetParent(workingDirectory).Parent.FullName;
+            XMLParser p = new XMLParser(projectDirectory+ "/DataSet/pu-fal07-llr_FYP.xml");
+        }
     }
 }

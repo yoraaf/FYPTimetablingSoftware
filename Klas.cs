@@ -4,24 +4,32 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GATest01 {
+namespace FYPTimetablingSoftware {
     class Klas {
         //gave it a Dutch name because its easy to guess and did not want to make a class called class
-        public string[][] Time { get; set;}
-        public string[][] Room { get; set; }
-        
-        public string Instructor { get; set; }
-        public int ID { get; set; }
-        public int Offering { get; set; }
-        public int Config { get; set; }
-        public int Subpart { get; set; }
-        public int ClassLimit { get; set; }
-        public int Department { get; set; }
+        public KlasTime[] Times { get; private set; }
+        public Room[] Rooms { get; private set; }
+        public string Instructor { get; private set; }
+        public int ID { get; private set; }
+        public int Offering { get; private set; }
+        public int Config { get; private set; }
+        public int Subpart { get; private set; }
+        public int ClassLimit { get; private set; }
+        public int Department { get; private set; }
         //scheduler and commited seem to be the same for every single entry so they are not in this list
 
-        public Klas(int id, int offering, int config, int subpart, int classLimit, int department, string instructor, string[][] time, string[][] room) {
+        public Klas(int id, int offering, int config, int subpart, int classLimit, int department, string instructor, KlasTime[] times, Room[] rooms) {
             ID = id; Offering = offering; Config = config; Subpart = subpart; ClassLimit = classLimit; 
-            Department = department; Instructor = instructor; Time = time; Room = room;
+            Department = department; Instructor = instructor; Times = times; Rooms = rooms;
+            //^assign all the parameters^
+
+
+        }
+        public Klas(int id, int offering, int config, int subpart, int classLimit, int department) {
+            ID = id; Offering = offering; Config = config; Subpart = subpart; ClassLimit = classLimit;
+            Department = department; 
+            //^assign all the parameters^
+
 
         }
     }

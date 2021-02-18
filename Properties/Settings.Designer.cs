@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace GATest01.Properties {
+namespace FYPTimetablingSoftware.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{4F62BD17-5BCB-4491-9253-074FDE19B633}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>GATest01</RootNamespace>
-    <AssemblyName>GATest01</AssemblyName>
+    <RootNamespace>FYPTimetablingSoftware</RootNamespace>
+    <AssemblyName>FYPTimetablingSoftware</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -74,7 +74,10 @@
     <Compile Include="Klas.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Room.cs" />
+    <Compile Include="Structs.cs" />
     <Compile Include="TestShakespeare.cs" />
+    <Compile Include="XMLParser.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -113,6 +116,10 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="DataSet\pu-fal07-llr_FYP.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

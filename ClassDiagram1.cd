@@ -7,7 +7,7 @@
       <FileName>DNA.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="GATest01.Form1">
+  <Class Name="FYPTimetablingSoftware.Form1">
     <Position X="6.75" Y="3.5" Width="1.5" />
     <Members>
       <Field Name="AllMembersBox" Hidden="true" />
@@ -33,7 +33,7 @@
       <Field Name="targetTextBox" Hidden="true" />
     </Members>
     <NestedTypes>
-      <Delegate Name="GATest01.Form1.SafeTextEdit" Collapsed="true">
+      <Delegate Name="FYPTimetablingSoftware.Form1.SafeTextEdit" Collapsed="true">
         <TypeIdentifier>
           <NewMemberFileName>Form1.cs</NewMemberFileName>
         </TypeIdentifier>
@@ -51,17 +51,17 @@
       <FileName>GeneticAlgorithm.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="GATest01.Program">
+  <Class Name="FYPTimetablingSoftware.Program">
     <Position X="8.5" Y="0.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
       <FileName>Program.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="GATest01.Klas">
+  <Class Name="FYPTimetablingSoftware.Klas">
     <Position X="10" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAgAAgAAAABAAAAAAEAAAAAAAgAQAACCAAQA=</HashCode>
       <FileName>Klas.cs</FileName>
     </TypeIdentifier>
   </Class>
