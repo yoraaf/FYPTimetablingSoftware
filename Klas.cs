@@ -9,28 +9,37 @@ namespace FYPTimetablingSoftware {
         //gave it a Dutch name because its easy to guess and did not want to make a class called class
         public KlasTime[] Times { get; private set; }
         public Room[] Rooms { get; private set; }
-        public string Instructor { get; private set; }
+        public int Instructor { get; private set; }
         public int ID { get; private set; }
         public int Offering { get; private set; }
         public int Config { get; private set; }
         public int Subpart { get; private set; }
         public int ClassLimit { get; private set; }
         public int Department { get; private set; }
+        public int Parent { get; private set; }
+        public int[] RoomPref { get; private set; } //was considering making a dict for this linking the room to the pref but since they're both arrays they'll share the same index anyway
+        //some rooms have a parent attribute, these don't have their own offering or config
         //scheduler and commited seem to be the same for every single entry so they are not in this list
 
-        public Klas(int id, int offering, int config, int subpart, int classLimit, int department, string instructor, KlasTime[] times, Room[] rooms) {
-            ID = id; Offering = offering; Config = config; Subpart = subpart; ClassLimit = classLimit; 
-            Department = department; Instructor = instructor; Times = times; Rooms = rooms;
+        public Klas(int id, int offering, int config, int subpart, int classLimit, int department, int instructor, KlasTime[] times, Room[] rooms, int[] roomPref) {
+            ID = id; Parent = -1; Offering = offering; Config = config; Subpart = subpart; ClassLimit = classLimit; 
+            Department = department; Instructor = instructor; Times = times; Rooms = rooms; RoomPref = roomPref;
             //^assign all the parameters^
-
-
         }
-        public Klas(int id, int offering, int config, int subpart, int classLimit, int department) {
-            ID = id; Offering = offering; Config = config; Subpart = subpart; ClassLimit = classLimit;
-            Department = department; 
+        public Klas(int id, int offering, int config, int subpart, int classLimit, int department, int instructor, KlasTime[] times) {
+            ID = id; Parent = -1; Offering = offering; Config = config; Subpart = subpart; ClassLimit = classLimit;
+            Department = department; Instructor = instructor; Times = times; Rooms = null; RoomPref = null;
             //^assign all the parameters^
-
-
         }
+        public Klas(int id, int parent, int subpart, int classLimit, int department, int instructor, KlasTime[] times, Room[] rooms, int[] roomPref) {
+            ID = id; Parent = parent; Offering = -1; Config = -1; Subpart = subpart; ClassLimit = classLimit;
+            Department = department; Instructor = instructor; Times = times; Rooms = rooms; RoomPref = roomPref;
+            //^assign all the parameters^
+        }
+
+        public override string ToString() {
+            return "Klas: id:" + ID + "; Offering:" + Offering + "; " + "; ClassLimit:" + ClassLimit + "; " + "; Rooms:" + Rooms.Length + "; " + "; Times:" + Times.Length + "; ";
+        }
+
     }
 }

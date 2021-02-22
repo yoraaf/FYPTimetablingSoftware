@@ -11,6 +11,7 @@ namespace FYPTimetablingSoftware {
         private XmlDocument doc = new XmlDocument();
         private readonly XmlNode root;
         private Room[] RoomList;
+        //private KlasTime[] KlasTimes;
 
         public XMLParser(string fileStr) {
             FileStr = fileStr;
@@ -25,15 +26,46 @@ namespace FYPTimetablingSoftware {
             XmlNode class1 = classes.ChildNodes.Item(0);
             Console.WriteLine("class1> "+class1.OuterXml);
             //XmlNode[] nodeList = new XmlNode[10];
-            Klas[] klasList = new Klas[10];
-            for (int i = 0; i < 10; i++) {
+            Klas[] klasList = new Klas[classes.ChildNodes.Count];
+            for (int i = 0; i < classes.ChildNodes.Count; i++) { //loop through all classes
                 XmlNode node = classes.ChildNodes.Item(i);
-                //Room[] roomList = new Room[node.ChildNodes];
                 XmlAttributeCollection attr = node.Attributes;
-                string test = node.Attributes.GetNamedItem("id").Value;
-                klasList[i] = new Klas(GetIntAttr(node, "id"), GetIntAttr(node, "offering"), GetIntAttr(node, "config"), GetIntAttr(node, "subpart"), GetIntAttr(node, "classLimit"), GetIntAttr(node, "department") );
+                
+                List<XmlNode> TimeNodeList = new List<XmlNode>();
+                List<XmlNode> RoomNodeList = new List<XmlNode>();
+                foreach (XmlNode n in node.ChildNodes) {
+                    if (n.Name == "time") {
+                        TimeNodeList.Add(n);
+                    }
+                    if(n.Name == "room") {
+                        RoomNodeList.Add(n);
+                    }
+                }
+                KlasTime[] TimeArr = ReadTimes(TimeNodeList); //find all the time attributes 
+                
+                Room[] KlasRooms = new Room[RoomNodeList.Count];
+                int[] KlasRoomPref = new int[RoomNodeList.Count];
+                for(int j = 0; j<RoomNodeList.Count; j++) {
+                    int roomID = GetIntAttr(RoomNodeList[j], "id");
+                    int pref = GetIntAttr(RoomNodeList[j], "pref");
+                    KlasRooms[j] = RoomList[roomID - 1]; //since the id increments evenly and starts at 1, id-1 is the array position
+                    KlasRoomPref[j] = pref;
+                }
+
+
+                //string test = node.Attributes.GetNamedItem("id").Value;
+                int instructor = -1; //-1 means no instructor given
+                if(node.FirstChild.Name == "instructor") {
+                    instructor = Int32.Parse(node.FirstChild.Attributes.GetNamedItem("id").Value);
+                }
+                if (node.Attributes.GetNamedItem("offering") == null) { //some classes don't have offering or config, they have parent instead. 
+                    klasList[i] = new Klas(GetIntAttr(node, "id"), GetIntAttr(node, "parent"), GetIntAttr(node, "subpart"), GetIntAttr(node, "classLimit"), GetIntAttr(node, "department"), instructor, TimeArr, KlasRooms, KlasRoomPref);
+                } else {
+                    klasList[i] = new Klas(GetIntAttr(node, "id"), GetIntAttr(node, "offering"), GetIntAttr(node, "config"), GetIntAttr(node, "subpart"), GetIntAttr(node, "classLimit"), GetIntAttr(node, "department"), instructor, TimeArr, KlasRooms, KlasRoomPref);
+                }
+                
             }
-            Console.WriteLine("test");
+            Console.WriteLine("klasList: " + klasList);
         }
 
         private int GetIntAttr(XmlNode node, string name) {
@@ -46,6 +78,24 @@ namespace FYPTimetablingSoftware {
 
         private string GetStringAttr(XmlNode node, string name) {
             return node.Attributes.GetNamedItem(name).Value;
+        }
+
+        private double GetDoubleAttr(XmlNode node, string name) {
+            try {
+                return Convert.ToDouble(node.Attributes.GetNamedItem(name).Value);
+            } catch {
+                return -1;
+            }
+        }
+
+
+        private KlasTime[] ReadTimes(List<XmlNode> TimeList) {
+            KlasTime[] result;
+            result = new KlasTime[TimeList.Count];
+            for(int i  = 0; i<TimeList.Count; i++) {
+                result[i] = new KlasTime(GetStringAttr(TimeList[i], "days"), GetIntAttr(TimeList[i], "start"), GetIntAttr(TimeList[i], "length"), GetIntAttr(TimeList[i], "breakTime"), GetDoubleAttr(TimeList[i], "pref"));
+            }
+            return result;
         }
 
         private void ReadAllRooms() {

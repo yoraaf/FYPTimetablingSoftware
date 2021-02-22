@@ -27,10 +27,13 @@ namespace FYPTimetablingSoftware {
             Constraint = constraint;
             Cap = cap;
             Loc = loc;
+            //Sharing = null;
             //Pref = pref;
 
         }
+        public override string ToString() {
+            return "Room: id:" + ID + "; cap:" + Cap+"; loc("+Loc[0]+","+Loc[1]+") ";
+        }
 
-        
     }
 }

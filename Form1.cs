@@ -184,7 +184,7 @@ namespace FYPTimetablingSoftware {
         private void XMLTestButton_Click(object sender, EventArgs e) {
             string workingDirectory = Environment.CurrentDirectory;
             string projectDirectory = Directory.GetParent(workingDirectory).Parent.FullName;
-            XMLParser p = new XMLParser(projectDirectory+ "/DataSet/pu-fal07-llr_FYP.xml");
+            XMLParser p = new XMLParser(projectDirectory+ "/DataSet/pu-fal07-llr_FYP_fix.xml");
         }
     }
 }
