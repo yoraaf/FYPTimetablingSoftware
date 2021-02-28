@@ -12,6 +12,7 @@ namespace FYPTimetablingSoftware {
         public int[] Loc { get; }
         //public double Pref { get; } This will have to be added later for each class
         public RoomSharing Sharing { get; }
+        private bool HasSharing = false;
 
         public Room(int id, bool constraint, int cap, int[] loc, RoomSharing sharing) {
             ID = id;
@@ -20,6 +21,7 @@ namespace FYPTimetablingSoftware {
             Loc = loc;
             //Pref = pref;
             Sharing = sharing;
+            HasSharing = true;
 
         }
         public Room(int id, bool constraint, int cap, int[] loc) {
@@ -27,12 +29,13 @@ namespace FYPTimetablingSoftware {
             Constraint = constraint;
             Cap = cap;
             Loc = loc;
+            HasSharing = false;
             //Sharing = null;
             //Pref = pref;
 
         }
         public override string ToString() {
-            return "Room: id:" + ID + "; cap:" + Cap+"; loc("+Loc[0]+","+Loc[1]+") ";
+            return "Room: id:" + ID + "; cap:" + Cap + "; loc(" + Loc[0] + "," + Loc[1] + "); HasSharing:"+HasSharing;
         }
 
     }

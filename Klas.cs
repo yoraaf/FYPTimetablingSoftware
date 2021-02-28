@@ -21,6 +21,10 @@ namespace FYPTimetablingSoftware {
         //some rooms have a parent attribute, these don't have their own offering or config
         //scheduler and commited seem to be the same for every single entry so they are not in this list
 
+        public KlasTime SolutionTime { get; set; }
+        public Room SolutionRoom { get; set; }
+
+
         public Klas(int id, int offering, int config, int subpart, int classLimit, int department, int instructor, KlasTime[] times, Room[] rooms, int[] roomPref) {
             ID = id; Parent = -1; Offering = offering; Config = config; Subpart = subpart; ClassLimit = classLimit; 
             Department = department; Instructor = instructor; Times = times; Rooms = rooms; RoomPref = roomPref;

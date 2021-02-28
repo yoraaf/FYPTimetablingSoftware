@@ -1,4 +1,7 @@
-﻿namespace FYPTimetablingSoftware {
+﻿using System.Collections;
+using System.Linq;
+
+namespace FYPTimetablingSoftware {
 
     public struct RoomSharing {
         public RoomSharing(string pattern, string ffa, string notAvailable, int[,] departments) {
@@ -8,27 +11,28 @@
             NotAvailable = notAvailable;
             Departments = departments;
         }
-        public string Pattern { get; }
-        public string FFA { get; }
-        public string NotAvailable { get; }
-        public int[,] Departments { get; }
+        public string Pattern { get; private set; }
+        public string FFA { get; private set; }
+        public string NotAvailable { get; private set; }
+        public int[,] Departments { get; private set; }
 
     }
 
     public struct KlasTime {
         public KlasTime(string days, int start, int length, int breakTime, double pref) {
-            Days = days;
+            //Days = days;
             Start = start;
             Length = length;
             BreakTime = breakTime;
             Pref = pref;
+            Days = new BitArray(days.Select(c => c == '1').ToArray());
 
         }
-        public string Days { get; }
-        public int Start { get; }
-        public int Length { get; }
-        public int BreakTime { get; }
-        public double Pref{ get; }
+        public BitArray Days { get; private set; }
+        public int Start { get; private set; }
+        public int Length { get; private set; }
+        public int BreakTime { get; private set; }
+        public double Pref{ get; private set; }
 
     }
 

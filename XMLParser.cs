@@ -11,6 +11,8 @@ namespace FYPTimetablingSoftware {
         private XmlDocument doc = new XmlDocument();
         private readonly XmlNode root;
         private Room[] RoomList;
+        private string[,] HardConstraints;
+        private string[,] SoftConstraints;
         //private KlasTime[] KlasTimes;
 
         public XMLParser(string fileStr) {
@@ -21,6 +23,7 @@ namespace FYPTimetablingSoftware {
             }
             root = doc["timetable"];
             ReadAllRooms();
+            ReadGroupConstraints();
 
             XmlNode classes = root["classes"];
             XmlNode class1 = classes.ChildNodes.Item(0);
@@ -88,6 +91,43 @@ namespace FYPTimetablingSoftware {
             }
         }
 
+        private void ReadGroupConstraints() {
+            XmlNode GroupConstraintNodes = root["groupConstraints"];
+            //string[] constraintList = new string[GroupConstraintNodes.ChildNodes.Count];
+            int nrOfHardC = 0;
+            int nrOfSoftC = 0;
+
+            for(int i = 0; i < GroupConstraintNodes.ChildNodes.Count; i++) {
+                XmlNode currentConstraint = GroupConstraintNodes.ChildNodes.Item(i);
+                //string constraintName = GetStringAttr(currentConstraint, "type");
+                string constraintPref = GetStringAttr(currentConstraint, "pref");
+                if(Int32.TryParse(constraintPref, out _)) {
+                    nrOfSoftC++;
+                } else {
+                    nrOfHardC++;
+                }
+            }
+            SoftConstraints = new string[nrOfSoftC, 2];
+            HardConstraints = new string[nrOfHardC, 2];
+            int i1 = 0;
+            int i2 = 0;
+            for (int i = 0; i < GroupConstraintNodes.ChildNodes.Count; i++) {
+                
+                XmlNode currentConstraint = GroupConstraintNodes.ChildNodes.Item(i);
+                string constraintName = GetStringAttr(currentConstraint, "type");
+                string constraintPref = GetStringAttr(currentConstraint, "pref");
+                if (Int32.TryParse(constraintPref, out _)) {
+                    SoftConstraints[i1, 0] = constraintName;
+                    SoftConstraints[i1, 1] = constraintPref;
+                    i1++;
+                } else {
+                    HardConstraints[i2, 0] = constraintName;
+                    HardConstraints[i2, 1] = constraintPref;
+                    i2++;
+                }
+            }
+
+        }
 
         private KlasTime[] ReadTimes(List<XmlNode> TimeList) {
             KlasTime[] result;
