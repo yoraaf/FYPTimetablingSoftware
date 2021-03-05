@@ -15,7 +15,8 @@ namespace FYPTimetablingSoftware {
         public string Type { get; private set; }
         public static BitArray AllFalse = new BitArray(7, false);
 
-        public Constraint(Klas[] classes, string type, float pref, bool isHardConstraint) {
+        public Constraint(int id, string type, float pref, bool isHardConstraint, Klas[] classes) {
+            ID = id;
             Classes = classes;
             Type = type;
             Pref = pref;

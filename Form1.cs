@@ -22,12 +22,12 @@ namespace FYPTimetablingSoftware {
         private readonly SynchronizationContext SyncContext;
         private DateTime previousTime = DateTime.Now;
         //Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque eget ligula dapibus, volutpat sapien a, sodales eros. Vestibulum et fringilla nibh. Mauris viverra lacus vel nunc fringilla, nec viverra orci pellentesque.
-        string targetString = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque eget ligula dapibus, volutpat sapien a, sodales eros. Vestibulum et fringilla nibh. Mauris viverra lacus vel nunc fringilla, nec viverra orci pellentesque.";
-        string validCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.|!#$%&/()=? ";
-        int nOfMembersToDisplay = 20;
-        int populationSize = 500;
-        float mutationRate = 0.01f;
-        int elitism = 5;
+        readonly string targetString = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque eget ligula dapibus, volutpat sapien a, sodales eros. Vestibulum et fringilla nibh. Mauris viverra lacus vel nunc fringilla, nec viverra orci pellentesque.";
+        readonly string validCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.|!#$%&/()=? ";
+        readonly int nOfMembersToDisplay = 20;
+        readonly int populationSize = 500;
+        readonly float mutationRate = 0.01f;
+        readonly int elitism = 5;
         bool enabled = false;
         bool aRunning = false;
         float oldFitness = 0;
@@ -58,7 +58,7 @@ namespace FYPTimetablingSoftware {
         }
 
         private void OnTimedEvent(Object source, ElapsedEventArgs e) {
-            if (!aRunning) {
+            if (!aRunning) { //check if the previous call is still running 
                 UpdateAlgorithm();
             }
         }
@@ -187,6 +187,10 @@ namespace FYPTimetablingSoftware {
             XMLParser p = new XMLParser(projectDirectory+ "/DataSet/SmallTest02.xml");
             // /DataSet/pu-fal07-llr_FYP_fix.xml
             // SmallTest01.xml
+        }
+
+        private void randomTestButton_Click(object sender, EventArgs e) {
+
         }
     }
 }

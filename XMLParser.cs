@@ -11,9 +11,12 @@ namespace FYPTimetablingSoftware {
         private XmlDocument doc = new XmlDocument();
         private readonly XmlNode root;
         private Room[] RoomList;
-        private string[,] HardConstraints;
-        private string[,] SoftConstraints;
+        //private string[,] HardConstraints;
+        //private string[,] SoftConstraints;
+        private Constraint[] HardConstraints;
+        private Constraint[] SoftConstraints;
         //private KlasTime[] KlasTimes;
+        private Klas[] KlasList;
 
         public XMLParser(string fileStr) {
             FileStr = fileStr;
@@ -23,13 +26,13 @@ namespace FYPTimetablingSoftware {
             }
             root = doc["timetable"];
             ReadAllRooms();
-            ReadGroupConstraints();
+            
 
             XmlNode classes = root["classes"];
             XmlNode class1 = classes.ChildNodes.Item(0);
             Console.WriteLine("class1> "+class1.OuterXml);
             //XmlNode[] nodeList = new XmlNode[10];
-            Klas[] klasList = new Klas[classes.ChildNodes.Count];
+            KlasList = new Klas[classes.ChildNodes.Count];
             for (int i = 0; i < classes.ChildNodes.Count; i++) { //loop through all classes
                 XmlNode node = classes.ChildNodes.Item(i);
                 XmlAttributeCollection attr = node.Attributes;
@@ -62,13 +65,15 @@ namespace FYPTimetablingSoftware {
                     instructor = Int32.Parse(node.FirstChild.Attributes.GetNamedItem("id").Value);
                 }
                 if (node.Attributes.GetNamedItem("offering") == null) { //some classes don't have offering or config, they have parent instead. 
-                    klasList[i] = new Klas(GetIntAttr(node, "id"), GetIntAttr(node, "parent"), GetIntAttr(node, "subpart"), GetIntAttr(node, "classLimit"), GetIntAttr(node, "department"), instructor, TimeArr, KlasRooms, KlasRoomPref);
+                    KlasList[i] = new Klas(GetIntAttr(node, "id"), GetIntAttr(node, "parent"), GetIntAttr(node, "subpart"), GetIntAttr(node, "classLimit"), GetIntAttr(node, "department"), instructor, TimeArr, KlasRooms, KlasRoomPref);
                 } else {
-                    klasList[i] = new Klas(GetIntAttr(node, "id"), GetIntAttr(node, "offering"), GetIntAttr(node, "config"), GetIntAttr(node, "subpart"), GetIntAttr(node, "classLimit"), GetIntAttr(node, "department"), instructor, TimeArr, KlasRooms, KlasRoomPref);
+                    KlasList[i] = new Klas(GetIntAttr(node, "id"), GetIntAttr(node, "offering"), GetIntAttr(node, "config"), GetIntAttr(node, "subpart"), GetIntAttr(node, "classLimit"), GetIntAttr(node, "department"), instructor, TimeArr, KlasRooms, KlasRoomPref);
                 }
                 
             }
-            Console.WriteLine("klasList: " + klasList);
+            ReadGroupConstraints();
+
+            Console.WriteLine("klasList: " + KlasList);
         }
 
         private int GetIntAttr(XmlNode node, string name) {
@@ -93,13 +98,11 @@ namespace FYPTimetablingSoftware {
 
         private void ReadGroupConstraints() {
             XmlNode GroupConstraintNodes = root["groupConstraints"];
-            //string[] constraintList = new string[GroupConstraintNodes.ChildNodes.Count];
             int nrOfHardC = 0;
             int nrOfSoftC = 0;
 
             for(int i = 0; i < GroupConstraintNodes.ChildNodes.Count; i++) {
                 XmlNode currentConstraint = GroupConstraintNodes.ChildNodes.Item(i);
-                //string constraintName = GetStringAttr(currentConstraint, "type");
                 string constraintPref = GetStringAttr(currentConstraint, "pref");
                 if(Int32.TryParse(constraintPref, out _)) {
                     nrOfSoftC++;
@@ -107,22 +110,39 @@ namespace FYPTimetablingSoftware {
                     nrOfHardC++;
                 }
             }
-            SoftConstraints = new string[nrOfSoftC, 2];
-            HardConstraints = new string[nrOfHardC, 2];
+            SoftConstraints = new Constraint[nrOfSoftC];
+            HardConstraints = new Constraint[nrOfHardC];
             int i1 = 0;
             int i2 = 0;
             for (int i = 0; i < GroupConstraintNodes.ChildNodes.Count; i++) {
-                
                 XmlNode currentConstraint = GroupConstraintNodes.ChildNodes.Item(i);
-                string constraintName = GetStringAttr(currentConstraint, "type");
-                string constraintPref = GetStringAttr(currentConstraint, "pref");
-                if (Int32.TryParse(constraintPref, out _)) {
-                    SoftConstraints[i1, 0] = constraintName;
-                    SoftConstraints[i1, 1] = constraintPref;
+                string cType = GetStringAttr(currentConstraint, "type");
+                string cPref = GetStringAttr(currentConstraint, "pref");
+                int cID = GetIntAttr(currentConstraint, "id");
+                Klas[] cClasses = new Klas[currentConstraint.ChildNodes.Count];
+                if (currentConstraint.HasChildNodes) {
+                    for (int j = 0; j<currentConstraint.ChildNodes.Count;j++) {
+                        int nID = GetIntAttr(currentConstraint.ChildNodes.Item(j), "id");
+                        cClasses[j] = KlasList[nID - 1];
+                    }
+                } else {
+                    Console.WriteLine(">>Something went wrong. Constraint should have child nodes");
+                }
+                //check if soft or hard constraint 
+                if (float.TryParse(cPref, out float pref)) {
+                    //Soft
+                    SoftConstraints[i1] = new Constraint(cID, cType, pref, false, cClasses);
                     i1++;
                 } else {
-                    HardConstraints[i2, 0] = constraintName;
-                    HardConstraints[i2, 1] = constraintPref;
+                    //Hard
+                    if (cPref == "R") {
+                        pref = -1.0f;
+                    } else if (cPref == "P") {
+                        pref = 1.0f;
+                    } else {
+                        Console.WriteLine(">>Something went wrong. Wrong value in cPref");
+                    }
+                    HardConstraints[i1] = new Constraint(cID, cType, pref, false, cClasses);
                     i2++;
                 }
             }
