@@ -39,6 +39,20 @@ namespace FYPTimetablingSoftware {
 
     }
 
+    public struct SolutionGene {
+        public KlasTime SolutionTime { get; set; }
+        public Room SolutionRoom { get; set; }
+        public int ID { get; set; }
+        public SolutionGene(int id, Room solutionRoom, KlasTime solutionTime) {
+            ID = id;
+            SolutionTime = solutionTime;
+            SolutionRoom = solutionRoom;
+        }
+        public override string ToString() {
+            return "SolutionGene: <" + SolutionRoom+"> <"+ SolutionTime + ">";
+        }
+    }
+
     /*public struct Room {
         public Room(int id, bool constraint, int cap, int[] loc, double pref, RoomSharing sharing) {
             ID = id;

@@ -9,16 +9,17 @@ namespace FYPTimetablingSoftware {
 		private Random random;
 		private Func<Klas, T> getRandomGene;
 		private Func<int, float> fitnessFunction;
+		private Klas[] KlasArr;
 
 		public DNA(int size, Random random, Func<Klas, T> getRandomGene, Func<int, float> fitnessFunction, bool shouldInitGenes = true) {
 			Genes = new T[size];
 			this.random = random;
 			this.getRandomGene = getRandomGene;
 			this.fitnessFunction = fitnessFunction;
-			Klas[] KlasList = XMLParser.GetKlasList();
+			KlasArr = XMLParser.GetKlasList();
 			if (shouldInitGenes) {
 				for (int i = 0; i < Genes.Length; i++) {
-					Genes[i] = getRandomGene(KlasList[i]); //add cloning here 
+					Genes[i] = getRandomGene(KlasArr[i]); //add cloning here 
 				}
 			}
 		}
@@ -39,10 +40,9 @@ namespace FYPTimetablingSoftware {
 		}
 
 		public void Mutate(float mutationRate) {
-			Klas[] KlasList = XMLParser.GetKlasList();
 			for (int i = 0; i < Genes.Length; i++) {
 				if (random.NextDouble() < mutationRate) {
-					Genes[i] = getRandomGene(KlasList[i]); 
+					Genes[i] = getRandomGene(KlasArr[i]); 
 					//this will reassign the gene, giving it new random solution values
 				}
 			}

@@ -33,7 +33,7 @@ namespace FYPTimetablingSoftware {
         float oldFitness = 0;
         Series fitnessSeries;
 
-        private GeneticAlgorithm<Klas> ga;
+        private GeneticAlgorithm<SolutionGene> ga;
         private System.Random random;
         public Form1() {
             SyncContext = SynchronizationContext.Current;
@@ -54,7 +54,14 @@ namespace FYPTimetablingSoftware {
             aTimer.Enabled = enabled;
 
             random = new System.Random();
-            ga = new GeneticAlgorithm<Klas>(populationSize, XMLParser.GetKlasList().Length, random, GetRandomKlasGene, FitnessFunction, UpdateAlgorithm, elitism, mutationRate);
+            ga = new GeneticAlgorithm<SolutionGene>(populationSize, XMLParser.GetKlasList().Length, random, GetRandomSolutionGene, FitnessFunction, UpdateAlgorithm, elitism, mutationRate);
+        }
+
+        private SolutionGene GetRandomSolutionGene(Klas k) {
+            int a = random.Next(0, k.Rooms.Length);
+            int b = random.Next(0, k.Times.Length);
+            SolutionGene output = new SolutionGene(k.ID, k.Rooms[a], k.Times[b]);
+            return output;
         }
 
         private Klas GetRandomKlasGene(Klas k) {
@@ -98,7 +105,7 @@ namespace FYPTimetablingSoftware {
 
         private float FitnessFunction(int index) {
             float score = 0;
-            DNA<Klas> dna = ga.Population[index];
+            DNA<SolutionGene> dna = ga.Population[index];
 
             /*for (int i = 0; i < dna.Genes.Length; i++) {
                 if (dna.Genes[i] == targetString[i]) {
@@ -112,7 +119,7 @@ namespace FYPTimetablingSoftware {
             return score;
         }
 
-        private Klas[] getGenes(int j) {
+        private SolutionGene[] getGenes(int j) {
             return ga.Population[j].Genes;
         }
 

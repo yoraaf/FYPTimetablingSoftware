@@ -33,13 +33,13 @@ namespace FYPTimetablingSoftware {
 			this.fitnessFunction = fitnessFunction;
 			this.updateAlgorithm = updateAlgorithm;
 			BestGenes = new T[dnaSize];
-			KlasArr = XMLParser.GetKlasList();
+			KlasArr = XMLParser.GetKlasList(); //The parser must be ran before the algorithm starts
 
 			//When the genetic algorithm is created the initial population is generated as follows:
 			for (int i = 0; i < populationSize; i++) {
 				Population.Add(new DNA<T>(dnaSize, random, getRandomGene, fitnessFunction, shouldInitGenes: true));
 			}
-			Console.ForegroundColor = ConsoleColor.Cyan;
+			Console.ForegroundColor = ConsoleColor.Green;
 			Console.WriteLine("-------------------------------------");
 			Console.ResetColor();
 		}
