@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace FYPTimetablingSoftware {
-    class Room {
+    public class Room {
         public int ID { get; }
         public bool Constraint { get; }
         public int Cap { get; }

@@ -16,7 +16,7 @@ namespace FYPTimetablingSoftware {
         private Constraint[] HardConstraints;
         private Constraint[] SoftConstraints;
         //private KlasTime[] KlasTimes;
-        private Klas[] KlasList;
+        private static Klas[] KlasList;
 
         public XMLParser(string fileStr) {
             FileStr = fileStr;
@@ -74,6 +74,10 @@ namespace FYPTimetablingSoftware {
             ReadGroupConstraints();
 
             Console.WriteLine("klasList: " + KlasList);
+        }
+        
+        public static Klas[] GetKlasList() {
+            return KlasList;
         }
 
         private int GetIntAttr(XmlNode node, string name) {

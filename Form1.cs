@@ -33,14 +33,14 @@ namespace FYPTimetablingSoftware {
         float oldFitness = 0;
         Series fitnessSeries;
 
-        private GeneticAlgorithm<char> ga;
+        private GeneticAlgorithm<Klas> ga;
         private System.Random random;
         public Form1() {
             SyncContext = SynchronizationContext.Current;
             GUIDispatcher = Dispatcher.CurrentDispatcher;
             InitializeComponent();
             targetTextBox.Text = targetString;
-            initAlgorithm();
+            //initAlgorithm();
         }
         private void initAlgorithm() {
             if (string.IsNullOrEmpty(targetString)) {
@@ -54,7 +54,16 @@ namespace FYPTimetablingSoftware {
             aTimer.Enabled = enabled;
 
             random = new System.Random();
-            ga = new GeneticAlgorithm<char>(populationSize, targetString.Length, random, GetRandomCharacter, FitnessFunction, UpdateAlgorithm, elitism, mutationRate);
+            ga = new GeneticAlgorithm<Klas>(populationSize, XMLParser.GetKlasList().Length, random, GetRandomKlasGene, FitnessFunction, UpdateAlgorithm, elitism, mutationRate);
+        }
+
+        private Klas GetRandomKlasGene(Klas k) {
+            int a = random.Next(0, k.Rooms.Length);
+            int b = random.Next(0, k.Times.Length);
+            k.SolutionRoom = k.Rooms[a];
+            k.SolutionTime = k.Times[b];
+            Console.WriteLine("kID: " + k.ID + " \tb: " + b +" \t<"+ k.SolutionTime+">");
+            return k;
         }
 
         private void OnTimedEvent(Object source, ElapsedEventArgs e) {
@@ -89,22 +98,21 @@ namespace FYPTimetablingSoftware {
 
         private float FitnessFunction(int index) {
             float score = 0;
-            DNA<char> dna = ga.Population[index];
+            DNA<Klas> dna = ga.Population[index];
 
-            for (int i = 0; i < dna.Genes.Length; i++) {
+            /*for (int i = 0; i < dna.Genes.Length; i++) {
                 if (dna.Genes[i] == targetString[i]) {
                     score += 1;
                 }
             }
-
-            score /= targetString.Length;
+            score /= targetString.Length;*/
 
             score = (float)((Math.Pow(2, score) - 1) / (2 - 1));
 
             return score;
         }
 
-        private char[] getGenes(int j) {
+        private Klas[] getGenes(int j) {
             return ga.Population[j].Genes;
         }
 
@@ -146,6 +154,7 @@ namespace FYPTimetablingSoftware {
         
 
         private async void startButton_Click(object sender, EventArgs e) {
+            initAlgorithm();
             await Task.Run(() => {
                 ResumeAlgorithm();
             });

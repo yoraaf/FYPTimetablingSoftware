@@ -33,6 +33,9 @@ namespace FYPTimetablingSoftware {
         public int Length { get; private set; }
         public int BreakTime { get; private set; }
         public double Pref{ get; private set; }
+        public override string ToString() {
+            return "KlasTime: Start:" + Start;
+        }
 
     }
 

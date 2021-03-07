@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace FYPTimetablingSoftware {
-    class Klas {
+    public class Klas {
         //gave it a Dutch name because its easy to guess and did not want to make a class called class
         public KlasTime[] Times { get; private set; }
         public Room[] Rooms { get; private set; }
