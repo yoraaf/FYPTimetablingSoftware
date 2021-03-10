@@ -13,8 +13,8 @@ namespace FYPTimetablingSoftware {
         private Room[] RoomList;
         //private string[,] HardConstraints;
         //private string[,] SoftConstraints;
-        private Constraint[] HardConstraints;
-        private Constraint[] SoftConstraints;
+        private static Constraint[] HardConstraints;
+        private static Constraint[] SoftConstraints;
         //private KlasTime[] KlasTimes;
         private static Klas[] KlasList;
 
@@ -27,7 +27,6 @@ namespace FYPTimetablingSoftware {
             root = doc["timetable"];
             ReadAllRooms();
             
-
             XmlNode classes = root["classes"];
             XmlNode class1 = classes.ChildNodes.Item(0);
             Console.WriteLine("class1> "+class1.OuterXml);
@@ -80,6 +79,13 @@ namespace FYPTimetablingSoftware {
             return KlasList;
         }
 
+        public static Constraint[] GetSoftConstraints() {
+            return SoftConstraints;
+        }
+        public static Constraint[] GetHardConstraints() {
+            return HardConstraints;
+        }
+
         private int GetIntAttr(XmlNode node, string name) {
             try {
                 return Int32.Parse(node.Attributes.GetNamedItem(name).Value);
@@ -123,11 +129,11 @@ namespace FYPTimetablingSoftware {
                 string cType = GetStringAttr(currentConstraint, "type");
                 string cPref = GetStringAttr(currentConstraint, "pref");
                 int cID = GetIntAttr(currentConstraint, "id");
-                Klas[] cClasses = new Klas[currentConstraint.ChildNodes.Count];
+                int[] cClassIDs = new int[currentConstraint.ChildNodes.Count];
                 if (currentConstraint.HasChildNodes) {
                     for (int j = 0; j<currentConstraint.ChildNodes.Count;j++) {
                         int nID = GetIntAttr(currentConstraint.ChildNodes.Item(j), "id");
-                        cClasses[j] = KlasList[nID - 1];
+                        cClassIDs[j] = KlasList[nID - 1].ID;
                     }
                 } else {
                     Console.WriteLine(">>Something went wrong. Constraint should have child nodes");
@@ -135,7 +141,7 @@ namespace FYPTimetablingSoftware {
                 //check if soft or hard constraint 
                 if (float.TryParse(cPref, out float pref)) {
                     //Soft
-                    SoftConstraints[i1] = new Constraint(cID, cType, pref, false, cClasses);
+                    SoftConstraints[i1] = new Constraint(cID, cType, pref, false, cClassIDs);
                     i1++;
                 } else {
                     //Hard
@@ -146,7 +152,7 @@ namespace FYPTimetablingSoftware {
                     } else {
                         Console.WriteLine(">>Something went wrong. Wrong value in cPref");
                     }
-                    HardConstraints[i1] = new Constraint(cID, cType, pref, false, cClasses);
+                    HardConstraints[i1] = new Constraint(cID, cType, pref, false, cClassIDs);
                     i2++;
                 }
             }

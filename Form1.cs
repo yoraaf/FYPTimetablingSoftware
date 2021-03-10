@@ -12,6 +12,7 @@ using System.Windows.Threading;
 using System.Timers;
 using System.Windows.Forms.DataVisualization.Charting;
 using System.IO;
+using System.Diagnostics;
 
 namespace FYPTimetablingSoftware {
     public partial class Form1 : Form {
@@ -32,6 +33,7 @@ namespace FYPTimetablingSoftware {
         bool aRunning = false;
         float oldFitness = 0;
         Series fitnessSeries;
+        private Constraint[] SoftConstraints;
 
         private GeneticAlgorithm<SolutionGene> ga;
         private System.Random random;
@@ -83,12 +85,18 @@ namespace FYPTimetablingSoftware {
             if (!enabled) { return; } //if something paused or stopped the algorithm, don't update anymore
             aRunning = true;
             ga.NewGeneration();
-            SafeTextEdit del = new SafeTextEdit(UpdateText);
-            GUIDispatcher.Invoke(del, new object[] { ga.BestGenes, ga.BestFitness, ga.Generation, ga.Population.Count});
-
+            try {
+                //SafeTextEdit del = new SafeTextEdit(UpdateText);
+                //GUIDispatcher.Invoke(del, new object[] { ga.BestGenes, ga.BestFitness, ga.Generation, ga.Population.Count });
+            } catch (Exception e){
+                Console.WriteLine("{0} Exception caught.", e);
+            }
             
             if (ga.Generation == 100 || ga.BestFitness == 1) { 
                 enabled = false;
+                Console.WriteLine("------------------------------------------------------------------------------");
+                Console.WriteLine("Reached generation 100");
+                Console.WriteLine("------------------------------------------------------------------------------");
             }
             aRunning = false;
         }
@@ -106,15 +114,11 @@ namespace FYPTimetablingSoftware {
         private float FitnessFunction(int index) {
             float score = 0;
             DNA<SolutionGene> dna = ga.Population[index];
-
-            /*for (int i = 0; i < dna.Genes.Length; i++) {
-                if (dna.Genes[i] == targetString[i]) {
-                    score += 1;
-                }
+            for(int i = 0; i < SoftConstraints.Length; i++) {
+                score += SoftConstraints[i].GetFitness(dna.Genes);
             }
-            score /= targetString.Length;*/
 
-            score = (float)((Math.Pow(2, score) - 1) / (2 - 1));
+            //score = (float)((Math.Pow(2, score) - 1) / (2 - 1));
 
             return score;
         }
@@ -170,6 +174,7 @@ namespace FYPTimetablingSoftware {
 
         private async void pauseButton_Click(object sender, EventArgs e) {
             await Task.Run(() => {
+                Console.WriteLine("Paused algorithm \r\nGeneration: " + ga.Generation + " ; Fitness: " + ga.BestFitness);
                 enabled = false;
                 aTimer.Enabled = enabled;
             });
@@ -203,6 +208,9 @@ namespace FYPTimetablingSoftware {
             XMLParser p = new XMLParser(projectDirectory+ "/DataSet/SmallTest02.xml");
             // /DataSet/pu-fal07-llr_FYP_fix.xml
             // SmallTest01.xml
+            SoftConstraints = XMLParser.GetSoftConstraints();
+            Console.BackgroundColor = ConsoleColor.Green;
+            Console.WriteLine("Dataset loaded succesfully");
         }
 
         private void randomTestButton_Click(object sender, EventArgs e) {

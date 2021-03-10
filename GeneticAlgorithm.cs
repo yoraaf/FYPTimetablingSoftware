@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 
 namespace FYPTimetablingSoftware {
 	public class GeneticAlgorithm<T> {
-		public List<DNA<T>> Population { get; private set; }
+		public List<DNA<T>> Population { get; private set; } // T is SolutionGene
 		public int Generation { get; private set; }
 		public float BestFitness { get; private set; }
 		public T[] BestGenes { get; private set; }
@@ -43,7 +45,13 @@ namespace FYPTimetablingSoftware {
 			Console.WriteLine("-------------------------------------");
 			Console.ResetColor();
 		}
-
+		public static string ArrayToString(T[] arr) {
+			string output = "";
+			for(int i = 0; i < arr.Length; i++) {
+				output += arr[i].ToString() +"\r\n";
+            }
+			return output;
+        }
 		public void NewGeneration(int numNewDNA = 0, bool crossoverNewDNA = false) {
 			int finalCount = Population.Count + numNewDNA;
 
@@ -58,7 +66,7 @@ namespace FYPTimetablingSoftware {
 			newPopulation.Clear();
 
 			for (int i = 0; i < Population.Count; i++) {
-				if (i < Elitism && i < Population.Count) {
+				if (i < Elitism && i < Population.Count) { //elitism makes it so that the top (5) make it into the next generation 
 					newPopulation.Add(Population[i]);
 				} else if (i < Population.Count || crossoverNewDNA) {
 					DNA<T> parent1 = ChooseParent();
@@ -67,7 +75,9 @@ namespace FYPTimetablingSoftware {
 					DNA<T> child = parent1.Crossover(parent2);
 
 					child.Mutate(MutationRate);
-
+					Debug.WriteLine("Parent 1: "+ ArrayToString(parent1.Genes));
+					Debug.WriteLine("Parent 2: "+ ArrayToString(parent2.Genes));
+					Debug.WriteLine("Child:    "+ ArrayToString(child.Genes));
 					newPopulation.Add(child);
 				} else {
 					newPopulation.Add(new DNA<T>(dnaSize, random, getRandomGene, fitnessFunction, shouldInitGenes: true));
@@ -82,9 +92,10 @@ namespace FYPTimetablingSoftware {
 		}
 
 		private int CompareDNA(DNA<T> a, DNA<T> b) {
-			if (a.Fitness > b.Fitness) {
+			//had to switch the >< around cz low = better
+			if (a.Fitness < b.Fitness) {
 				return -1;
-			} else if (a.Fitness < b.Fitness) {
+			} else if (a.Fitness > b.Fitness) {
 				return 1;
 			} else {
 				return 0;
@@ -107,7 +118,34 @@ namespace FYPTimetablingSoftware {
 			best.Genes.CopyTo(BestGenes, 0);
 		}
 
+		private double GetFitnessSum() {
+			double output = 0;
+			for(int i = 0; i < Population.Count; i++) {
+				output += Population[i].Fitness;
+            }
+			return output;
+        }
+
 		private DNA<T> ChooseParent() {
+			//tournament style selection
+			double randomNumber = GetFitnessSum() * random.NextDouble();
+			int tournamentSize =  (Int32)Math.Floor(Population.Count * 0.2);
+			DNA<T>[] tournamentMembers = new DNA<T>[tournamentSize];
+			for (int i = 0; i < tournamentSize; i++) {
+				DNA<T> x;
+				do {
+					//add random person from population to the tournament and make sure they aren't in already
+					x = Population[random.Next(0, Population.Count)];
+				} while (tournamentMembers.Contains(x));
+				tournamentMembers[i] = x;
+			}
+			//sort tournament members my fitness and return the fittest one
+			Array.Sort(tournamentMembers, CompareDNA); 
+			//Console.WriteLine("top ")
+			return tournamentMembers[0];
+		}
+
+		private DNA<T> ChooseParent_old() {
 			double r = random.NextDouble();
 			double randomNumber = r * fitnessSum * 0.9;
 			double[] fitnessArr = new double[Population.Count];
