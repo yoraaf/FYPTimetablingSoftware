@@ -57,7 +57,7 @@
             this.AllMembersBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.AllMembersBox.Size = new System.Drawing.Size(317, 280);
             this.AllMembersBox.TabIndex = 0;
-            this.AllMembersBox.Text = "aaaa\r\na\r\na\r\nb\r\n";
+            this.AllMembersBox.Text = "---";
             // 
             // label1
             // 
@@ -152,7 +152,6 @@
             // 
             chartArea1.AxisX.MajorGrid.LineColor = System.Drawing.Color.LightGray;
             chartArea1.AxisY.MajorGrid.LineColor = System.Drawing.Color.LightGray;
-            chartArea1.AxisY.Maximum = 1D;
             chartArea1.AxisY.Minimum = 0D;
             chartArea1.Name = "ChartArea1";
             this.fitnessChart.ChartAreas.Add(chartArea1);
@@ -186,7 +185,7 @@
             this.targetTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.targetTextBox.Size = new System.Drawing.Size(473, 45);
             this.targetTextBox.TabIndex = 9;
-            this.targetTextBox.Text = "aaaa\r\na\r\na\r\nb\r\n";
+            this.targetTextBox.Text = "---";
             // 
             // bestGeneBox
             // 
@@ -201,7 +200,7 @@
             this.bestGeneBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.bestGeneBox.Size = new System.Drawing.Size(473, 45);
             this.bestGeneBox.TabIndex = 9;
-            this.bestGeneBox.Text = "aaaa\r\na\r\na\r\nb\r\n";
+            this.bestGeneBox.Text = "---";
             // 
             // graphDataTextBox
             // 

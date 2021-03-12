@@ -16,7 +16,7 @@ using System.Diagnostics;
 
 namespace FYPTimetablingSoftware {
     public partial class Form1 : Form {
-        private delegate void SafeTextEdit(char[] bestGenes, float bestFitness, int generation, int populationSize);
+        private delegate void SafeTextEdit(SolutionGene[] bestGenes, float bestFitness, int generation, int populationSize);
         Dispatcher GUIDispatcher;
         private System.Timers.Timer aTimer;
 
@@ -86,8 +86,8 @@ namespace FYPTimetablingSoftware {
             aRunning = true;
             ga.NewGeneration();
             try {
-                //SafeTextEdit del = new SafeTextEdit(UpdateText);
-                //GUIDispatcher.Invoke(del, new object[] { ga.BestGenes, ga.BestFitness, ga.Generation, ga.Population.Count });
+                SafeTextEdit del = new SafeTextEdit(UpdateText);
+                GUIDispatcher.Invoke(del, new object[] { ga.BestGenes, ga.BestFitness, ga.Generation, ga.Population.Count });
             } catch (Exception e){
                 Console.WriteLine("{0} Exception caught.", e);
             }
@@ -127,21 +127,21 @@ namespace FYPTimetablingSoftware {
             return ga.Population[j].Genes;
         }
 
-        private void UpdateText(char[] bestGenes, float bestFitness, int generation, int populationSize) {
-            float improvement = bestFitness - oldFitness;
+        private void UpdateText(SolutionGene[] bestGenes, float bestFitness, int generation, int populationSize) {
+            float improvement = (bestFitness - oldFitness)*-1;
             if (improvement > 0.0001) {
-                fitnessSeries.Points.AddXY(generation, bestFitness);
+                fitnessSeries.Points.AddXY(generation, bestFitness*-1);
                 graphDataTextBox.AppendText(generation+"\t ; \t"+bestFitness + "\r\n");
-                
+                oldFitness = bestFitness;
             }
 
-            oldFitness = bestFitness;
+            
 
-            bestGeneBox.Text = CharArrayToString(bestGenes);
+            //bestGeneBox.Text = CharArrayToString(bestGenes);
             fitnessLbl.Text = bestFitness.ToString();
             generationLbl.Text = generation.ToString();
-            Console.WriteLine("Generation" + generation.ToString() + "\t Fitness" + bestFitness.ToString() + "\n genes:" + CharArrayToString(bestGenes));
-            int n = nOfMembersToDisplay;
+            Console.WriteLine("Generation" + generation.ToString() + "\t Fitness" + bestFitness.ToString() /*+"\n genes:" + CharArrayToString(bestGenes)*/);
+            /*int n = nOfMembersToDisplay;
             if (nOfMembersToDisplay > populationSize) { n = populationSize;  }
             var sb = new StringBuilder();
             for (int i = 0; i < n; i++) { //loop through the top n of population
@@ -150,7 +150,7 @@ namespace FYPTimetablingSoftware {
                 }
                 sb.AppendLine();
             }
-            AllMembersBox.Text = sb.ToString();
+            AllMembersBox.Text = sb.ToString();*/
         }
 
         private string CharArrayToString(char[] charArray) {
