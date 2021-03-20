@@ -6,6 +6,7 @@ using System.Windows.Forms;
 
 namespace FYPTimetablingSoftware {
     static class Program {
+        public static float HardConstraintWeight = 40;
         /// <summary>
         /// The main entry point for the application.
         /// </summary>

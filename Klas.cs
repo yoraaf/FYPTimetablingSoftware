@@ -17,7 +17,7 @@ namespace FYPTimetablingSoftware {
         public int ClassLimit { get; private set; }
         public int Department { get; private set; }
         public int Parent { get; private set; }
-        public int[] RoomPref { get; private set; } //was considering making a dict for this linking the room to the pref but since they're both arrays they'll share the same index anyway
+        public Dictionary<int, double> RoomPref { get; private set; } //was considering making a dict for this linking the room to the pref but since they're both arrays they'll share the same index anyway
         //some rooms have a parent attribute, these don't have their own offering or config
         //scheduler and commited seem to be the same for every single entry so they are not in this list
 
@@ -25,7 +25,7 @@ namespace FYPTimetablingSoftware {
         public Room SolutionRoom { get; set; }
 
 
-        public Klas(int id, int offering, int config, int subpart, int classLimit, int department, int instructor, KlasTime[] times, Room[] rooms, int[] roomPref) {
+        public Klas(int id, int offering, int config, int subpart, int classLimit, int department, int instructor, KlasTime[] times, Room[] rooms, Dictionary<int, double> roomPref) {
             ID = id; Parent = -1; Offering = offering; Config = config; Subpart = subpart; ClassLimit = classLimit; 
             Department = department; Instructor = instructor; Times = times; Rooms = rooms; RoomPref = roomPref;
             //^assign all the parameters^
@@ -35,7 +35,7 @@ namespace FYPTimetablingSoftware {
             Department = department; Instructor = instructor; Times = times; Rooms = null; RoomPref = null;
             //^assign all the parameters^
         }
-        public Klas(int id, int parent, int subpart, int classLimit, int department, int instructor, KlasTime[] times, Room[] rooms, int[] roomPref) {
+        public Klas(int id, int parent, int subpart, int classLimit, int department, int instructor, KlasTime[] times, Room[] rooms, Dictionary<int, double> roomPref) {
             ID = id; Parent = parent; Offering = -1; Config = -1; Subpart = subpart; ClassLimit = classLimit;
             Department = department; Instructor = instructor; Times = times; Rooms = rooms; RoomPref = roomPref;
             //^assign all the parameters^

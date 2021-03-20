@@ -9,6 +9,7 @@ namespace FYPTimetablingSoftware {
 		public int Generation { get; private set; }
 		public float BestFitness { get; private set; }
 		public T[] BestGenes { get; private set; }
+		public DNA<T> BestDNA { get; private set; }
 
 		public int Elitism;
 		public float MutationRate;
@@ -75,9 +76,9 @@ namespace FYPTimetablingSoftware {
 					DNA<T> child = parent1.Crossover(parent2);
 
 					child.Mutate(MutationRate);
-					Debug.WriteLine("Parent 1: "+ ArrayToString(parent1.Genes));
+					/*Debug.WriteLine("Parent 1: "+ ArrayToString(parent1.Genes));
 					Debug.WriteLine("Parent 2: "+ ArrayToString(parent2.Genes));
-					Debug.WriteLine("Child:    "+ ArrayToString(child.Genes));
+					Debug.WriteLine("Child:    "+ ArrayToString(child.Genes));*/
 					newPopulation.Add(child);
 				} else {
 					newPopulation.Add(new DNA<T>(dnaSize, random, getRandomGene, fitnessFunction, shouldInitGenes: true));
@@ -109,13 +110,14 @@ namespace FYPTimetablingSoftware {
 			for (int i = 0; i < Population.Count; i++) {
 				fitnessSum += Population[i].CalculateFitness(i);
 
-				if (Population[i].Fitness > best.Fitness) {
+				if (Population[i].Fitness < best.Fitness) {
 					best = Population[i];
 				}
 			}
 
 			BestFitness = best.Fitness;
 			best.Genes.CopyTo(BestGenes, 0);
+			BestDNA = best;
 		}
 
 		private double GetFitnessSum() {

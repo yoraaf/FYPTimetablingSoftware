@@ -10,7 +10,7 @@ namespace FYPTimetablingSoftware {
         private string FileStr;
         private XmlDocument doc = new XmlDocument();
         private readonly XmlNode root;
-        private Room[] RoomList;
+        private static Room[] RoomList;
         //private string[,] HardConstraints;
         //private string[,] SoftConstraints;
         private static Constraint[] HardConstraints;
@@ -49,12 +49,12 @@ namespace FYPTimetablingSoftware {
                 KlasTime[] TimeArr = ReadTimes(TimeNodeList); //find all the time attributes 
                 
                 Room[] KlasRooms = new Room[RoomNodeList.Count];
-                int[] KlasRoomPref = new int[RoomNodeList.Count];
+                Dictionary<int, double> KlasRoomPref = new Dictionary<int, double>();
                 for(int j = 0; j<RoomNodeList.Count; j++) {
                     int roomID = GetIntAttr(RoomNodeList[j], "id");
-                    int pref = GetIntAttr(RoomNodeList[j], "pref");
+                    double pref = GetDoubleAttr(RoomNodeList[j], "pref");
                     KlasRooms[j] = RoomList[roomID - 1]; //since the id increments evenly and starts at 1, id-1 is the array position
-                    KlasRoomPref[j] = pref;
+                    KlasRoomPref[roomID] = pref;
                 }
 
 
@@ -84,6 +84,8 @@ namespace FYPTimetablingSoftware {
         }
         public static Constraint[] GetHardConstraints() {
             return HardConstraints;
+        }public static Room[] GetRoomList() {
+            return RoomList;
         }
 
         private int GetIntAttr(XmlNode node, string name) {
@@ -114,7 +116,10 @@ namespace FYPTimetablingSoftware {
             for(int i = 0; i < GroupConstraintNodes.ChildNodes.Count; i++) {
                 XmlNode currentConstraint = GroupConstraintNodes.ChildNodes.Item(i);
                 string constraintPref = GetStringAttr(currentConstraint, "pref");
-                if(Int32.TryParse(constraintPref, out _)) {
+                string cType = GetStringAttr(currentConstraint, "type");
+                if (Int32.TryParse(constraintPref, out _)) {
+                    nrOfSoftC++;
+                } else if (cType == "SPREAD") {
                     nrOfSoftC++;
                 } else {
                     nrOfHardC++;
@@ -143,18 +148,26 @@ namespace FYPTimetablingSoftware {
                     //Soft
                     SoftConstraints[i1] = new Constraint(cID, cType, pref, false, cClassIDs);
                     i1++;
+                } else if (cType == "SPREAD") {
+                    pref = (cPref == "R") ? -4 : 4; //if its R its -4, otherwise its +4
+                    SoftConstraints[i1] = new Constraint(cID, cType, pref, false, cClassIDs);
+                    i1++;
                 } else {
                     //Hard
+                    //For hard constraints the result is the Pref, when the constraint has been violated. So R is positive(bad) and P is negative (good)
                     if (cPref == "R") {
-                        pref = -1.0f;
+                        pref = Program.HardConstraintWeight;
                     } else if (cPref == "P") {
-                        pref = 1.0f;
+                        pref = -Program.HardConstraintWeight;
                     } else {
                         Console.WriteLine(">>Something went wrong. Wrong value in cPref");
                     }
-                    HardConstraints[i1] = new Constraint(cID, cType, pref, false, cClassIDs);
+                    HardConstraints[i2] = new Constraint(cID, cType, pref, true, cClassIDs);
                     i2++;
                 }
+            }
+            for(int i = 0; i < HardConstraints.Length; i++) {
+                Console.WriteLine(HardConstraints[i]);
             }
 
         }

@@ -27,8 +27,6 @@
             System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.AllMembersBox = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.generationLbl = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -37,11 +35,16 @@
             this.pauseButton = new System.Windows.Forms.Button();
             this.resumeButton = new System.Windows.Forms.Button();
             this.fitnessChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.targetTextBox = new System.Windows.Forms.TextBox();
-            this.bestGeneBox = new System.Windows.Forms.TextBox();
             this.graphDataTextBox = new System.Windows.Forms.TextBox();
             this.XMLTestButton = new System.Windows.Forms.Button();
             this.randomTestButton = new System.Windows.Forms.Button();
+            this.StartTimeLbl = new System.Windows.Forms.Label();
+            this.StartTimeValueLbl = new System.Windows.Forms.Label();
+            this.TimeElapsedValueLbl = new System.Windows.Forms.Label();
+            this.TimeElapsedLbl = new System.Windows.Forms.Label();
+            this.AverageValueLbl = new System.Windows.Forms.Label();
+            this.AverageLbl = new System.Windows.Forms.Label();
+            this.TestButton2 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.fitnessChart)).BeginInit();
             this.SuspendLayout();
             // 
@@ -59,29 +62,10 @@
             this.AllMembersBox.TabIndex = 0;
             this.AllMembersBox.Text = "---";
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 15);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(62, 13);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Target Text";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 82);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(57, 13);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "Best Gene";
-            this.label2.Click += new System.EventHandler(this.label2_Click);
-            // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 174);
+            this.label3.Location = new System.Drawing.Point(12, 26);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(59, 13);
             this.label3.TabIndex = 3;
@@ -91,7 +75,7 @@
             // generationLbl
             // 
             this.generationLbl.AutoSize = true;
-            this.generationLbl.Location = new System.Drawing.Point(118, 174);
+            this.generationLbl.Location = new System.Drawing.Point(118, 26);
             this.generationLbl.Name = "generationLbl";
             this.generationLbl.Size = new System.Drawing.Size(71, 13);
             this.generationLbl.TabIndex = 4;
@@ -101,7 +85,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(12, 144);
+            this.label4.Location = new System.Drawing.Point(12, 54);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(40, 13);
             this.label4.TabIndex = 3;
@@ -111,7 +95,7 @@
             // fitnessLbl
             // 
             this.fitnessLbl.AutoSize = true;
-            this.fitnessLbl.Location = new System.Drawing.Point(118, 144);
+            this.fitnessLbl.Location = new System.Drawing.Point(118, 54);
             this.fitnessLbl.Name = "fitnessLbl";
             this.fitnessLbl.Size = new System.Drawing.Size(51, 13);
             this.fitnessLbl.TabIndex = 4;
@@ -120,6 +104,7 @@
             // 
             // startButton
             // 
+            this.startButton.Enabled = false;
             this.startButton.Location = new System.Drawing.Point(15, 230);
             this.startButton.Name = "startButton";
             this.startButton.Size = new System.Drawing.Size(75, 23);
@@ -152,7 +137,6 @@
             // 
             chartArea1.AxisX.MajorGrid.LineColor = System.Drawing.Color.LightGray;
             chartArea1.AxisY.MajorGrid.LineColor = System.Drawing.Color.LightGray;
-            chartArea1.AxisY.Minimum = 0D;
             chartArea1.Name = "ChartArea1";
             this.fitnessChart.ChartAreas.Add(chartArea1);
             legend1.Enabled = false;
@@ -171,36 +155,6 @@
             this.fitnessChart.Size = new System.Drawing.Size(579, 424);
             this.fitnessChart.TabIndex = 8;
             this.fitnessChart.Text = "chart1";
-            // 
-            // targetTextBox
-            // 
-            this.targetTextBox.AcceptsReturn = true;
-            this.targetTextBox.AcceptsTab = true;
-            this.targetTextBox.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.targetTextBox.Font = new System.Drawing.Font("Courier New", 12F, System.Drawing.FontStyle.Bold);
-            this.targetTextBox.Location = new System.Drawing.Point(121, 15);
-            this.targetTextBox.Multiline = true;
-            this.targetTextBox.Name = "targetTextBox";
-            this.targetTextBox.ReadOnly = true;
-            this.targetTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.targetTextBox.Size = new System.Drawing.Size(473, 45);
-            this.targetTextBox.TabIndex = 9;
-            this.targetTextBox.Text = "---";
-            // 
-            // bestGeneBox
-            // 
-            this.bestGeneBox.AcceptsReturn = true;
-            this.bestGeneBox.AcceptsTab = true;
-            this.bestGeneBox.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.bestGeneBox.Font = new System.Drawing.Font("Courier New", 12F, System.Drawing.FontStyle.Bold);
-            this.bestGeneBox.Location = new System.Drawing.Point(121, 82);
-            this.bestGeneBox.Multiline = true;
-            this.bestGeneBox.Name = "bestGeneBox";
-            this.bestGeneBox.ReadOnly = true;
-            this.bestGeneBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.bestGeneBox.Size = new System.Drawing.Size(473, 45);
-            this.bestGeneBox.TabIndex = 9;
-            this.bestGeneBox.Text = "---";
             // 
             // graphDataTextBox
             // 
@@ -227,23 +181,92 @@
             // 
             // randomTestButton
             // 
-            this.randomTestButton.Location = new System.Drawing.Point(506, 223);
+            this.randomTestButton.Location = new System.Drawing.Point(467, 229);
             this.randomTestButton.Name = "randomTestButton";
-            this.randomTestButton.Size = new System.Drawing.Size(37, 37);
+            this.randomTestButton.Size = new System.Drawing.Size(44, 24);
             this.randomTestButton.TabIndex = 11;
-            this.randomTestButton.Text = "Test";
+            this.randomTestButton.Text = "Break";
             this.randomTestButton.UseVisualStyleBackColor = true;
             this.randomTestButton.Click += new System.EventHandler(this.randomTestButton_Click);
+            // 
+            // StartTimeLbl
+            // 
+            this.StartTimeLbl.AutoSize = true;
+            this.StartTimeLbl.Location = new System.Drawing.Point(362, 26);
+            this.StartTimeLbl.Name = "StartTimeLbl";
+            this.StartTimeLbl.Size = new System.Drawing.Size(55, 13);
+            this.StartTimeLbl.TabIndex = 12;
+            this.StartTimeLbl.Text = "Start Time";
+            // 
+            // StartTimeValueLbl
+            // 
+            this.StartTimeValueLbl.AutoSize = true;
+            this.StartTimeValueLbl.Location = new System.Drawing.Point(464, 26);
+            this.StartTimeValueLbl.Name = "StartTimeValueLbl";
+            this.StartTimeValueLbl.Size = new System.Drawing.Size(79, 13);
+            this.StartTimeValueLbl.TabIndex = 13;
+            this.StartTimeValueLbl.Text = "StartTimeValue";
+            // 
+            // TimeElapsedValueLbl
+            // 
+            this.TimeElapsedValueLbl.AutoSize = true;
+            this.TimeElapsedValueLbl.Location = new System.Drawing.Point(464, 54);
+            this.TimeElapsedValueLbl.Name = "TimeElapsedValueLbl";
+            this.TimeElapsedValueLbl.Size = new System.Drawing.Size(95, 13);
+            this.TimeElapsedValueLbl.TabIndex = 15;
+            this.TimeElapsedValueLbl.Text = "TimeElapsedValue";
+            // 
+            // TimeElapsedLbl
+            // 
+            this.TimeElapsedLbl.AutoSize = true;
+            this.TimeElapsedLbl.Location = new System.Drawing.Point(362, 54);
+            this.TimeElapsedLbl.Name = "TimeElapsedLbl";
+            this.TimeElapsedLbl.Size = new System.Drawing.Size(71, 13);
+            this.TimeElapsedLbl.TabIndex = 14;
+            this.TimeElapsedLbl.Text = "Time Elapsed";
+            // 
+            // AverageValueLbl
+            // 
+            this.AverageValueLbl.AutoSize = true;
+            this.AverageValueLbl.Location = new System.Drawing.Point(464, 85);
+            this.AverageValueLbl.Name = "AverageValueLbl";
+            this.AverageValueLbl.Size = new System.Drawing.Size(102, 13);
+            this.AverageValueLbl.TabIndex = 17;
+            this.AverageValueLbl.Text = "[Calculated at g100]";
+            // 
+            // AverageLbl
+            // 
+            this.AverageLbl.AutoSize = true;
+            this.AverageLbl.Location = new System.Drawing.Point(362, 85);
+            this.AverageLbl.Name = "AverageLbl";
+            this.AverageLbl.Size = new System.Drawing.Size(47, 13);
+            this.AverageLbl.TabIndex = 16;
+            this.AverageLbl.Text = "Average";
+            // 
+            // TestButton2
+            // 
+            this.TestButton2.Location = new System.Drawing.Point(548, 229);
+            this.TestButton2.Name = "TestButton2";
+            this.TestButton2.Size = new System.Drawing.Size(46, 23);
+            this.TestButton2.TabIndex = 18;
+            this.TestButton2.Text = "Test";
+            this.TestButton2.UseVisualStyleBackColor = true;
+            this.TestButton2.Click += new System.EventHandler(this.TestButton2_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(939, 738);
+            this.Controls.Add(this.TestButton2);
+            this.Controls.Add(this.AverageValueLbl);
+            this.Controls.Add(this.AverageLbl);
+            this.Controls.Add(this.TimeElapsedValueLbl);
+            this.Controls.Add(this.TimeElapsedLbl);
+            this.Controls.Add(this.StartTimeValueLbl);
+            this.Controls.Add(this.StartTimeLbl);
             this.Controls.Add(this.randomTestButton);
             this.Controls.Add(this.XMLTestButton);
-            this.Controls.Add(this.bestGeneBox);
-            this.Controls.Add(this.targetTextBox);
             this.Controls.Add(this.fitnessChart);
             this.Controls.Add(this.resumeButton);
             this.Controls.Add(this.pauseButton);
@@ -252,8 +275,6 @@
             this.Controls.Add(this.label4);
             this.Controls.Add(this.generationLbl);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
             this.Controls.Add(this.graphDataTextBox);
             this.Controls.Add(this.AllMembersBox);
             this.Name = "Form1";
@@ -268,8 +289,6 @@
         #endregion
 
         private System.Windows.Forms.TextBox AllMembersBox;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label generationLbl;
         private System.Windows.Forms.Label label4;
@@ -278,11 +297,16 @@
         private System.Windows.Forms.Button pauseButton;
         private System.Windows.Forms.Button resumeButton;
         private System.Windows.Forms.DataVisualization.Charting.Chart fitnessChart;
-        private System.Windows.Forms.TextBox targetTextBox;
-        private System.Windows.Forms.TextBox bestGeneBox;
         private System.Windows.Forms.TextBox graphDataTextBox;
         private System.Windows.Forms.Button XMLTestButton;
         private System.Windows.Forms.Button randomTestButton;
+        private System.Windows.Forms.Label StartTimeLbl;
+        private System.Windows.Forms.Label StartTimeValueLbl;
+        private System.Windows.Forms.Label TimeElapsedValueLbl;
+        private System.Windows.Forms.Label TimeElapsedLbl;
+        private System.Windows.Forms.Label AverageValueLbl;
+        private System.Windows.Forms.Label AverageLbl;
+        private System.Windows.Forms.Button TestButton2;
     }
 }
 

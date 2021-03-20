@@ -18,7 +18,7 @@ namespace FYPTimetablingSoftware {
 
     }
 
-    public struct KlasTime {
+    public class KlasTime {
         public KlasTime(string days, int start, int length, int breakTime, double pref) {
             //Days = days;
             Start = start;
@@ -34,12 +34,12 @@ namespace FYPTimetablingSoftware {
         public int BreakTime { get; private set; }
         public double Pref{ get; private set; }
         public override string ToString() {
-            return "KlasTime: Start:" + Start;
+            return "KlasTime: Start:" + Start + " Length: "+Length;
         }
 
     }
 
-    public struct SolutionGene {
+    public class SolutionGene {
         public KlasTime SolutionTime { get; set; }
         public Room SolutionRoom { get; set; }
         public int ID { get; set; }

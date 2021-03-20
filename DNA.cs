@@ -9,8 +9,8 @@ namespace FYPTimetablingSoftware {
 		private Random random;
 		private Func<Klas, T> getRandomGene;
 		private Func<int, float> fitnessFunction;
-		private Klas[] KlasArr;
-
+		public Klas[] KlasArr { get; private set; }
+		public string ConstraintResult = "";
 		public DNA(int size, Random random, Func<Klas, T> getRandomGene, Func<int, float> fitnessFunction, bool shouldInitGenes = true) {
 			Genes = new T[size];
 			this.random = random;
