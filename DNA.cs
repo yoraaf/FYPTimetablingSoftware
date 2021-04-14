@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace FYPTimetablingSoftware {
@@ -11,6 +12,7 @@ namespace FYPTimetablingSoftware {
 		private Func<int, float> fitnessFunction;
 		public Klas[] KlasArr { get; private set; }
 		public string ConstraintResult = "";
+		public Dictionary<string, int> ConstraintViolations = new Dictionary<string, int>() { { "BTB", 0 }, { "BTB_TIME", 0 }, { "CAN_SHARE_ROOM", 0 }, { "DIFF_TIME", 0 }, { "MEET_WITH", 0 }, { "NHB(1.5)", 0 }, { "NHB_GTE(1)", 0 }, { "SAME_DAYS", 0 }, { "SAME_INSTR", 0 }, { "SAME_ROOM", 0 }, { "SAME_START", 0 }, { "SAME_TIME", 0 }, { "SAME_STUDENTS", 0 }, { "SPREAD", 0 } };
 		public DNA(int size, Random random, Func<Klas, T> getRandomGene, Func<int, float> fitnessFunction, bool shouldInitGenes = true) {
 			Genes = new T[size];
 			this.random = random;

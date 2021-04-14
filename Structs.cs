@@ -25,10 +25,13 @@ namespace FYPTimetablingSoftware {
             Length = length;
             BreakTime = breakTime;
             Pref = pref;
+            DaysString = days;
             Days = new BitArray(days.Select(c => c == '1').ToArray());
-
+            NrOfDays = days.Count(f => f == '1');
         }
         public BitArray Days { get; private set; }
+        public int NrOfDays { get; private set; }
+        public string DaysString { get; private set; }
         public int Start { get; private set; }
         public int Length { get; private set; }
         public int BreakTime { get; private set; }

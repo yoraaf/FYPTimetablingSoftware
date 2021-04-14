@@ -16,7 +16,7 @@ namespace FYPTimetablingSoftware {
         public static BitArray AllFalse = new BitArray(7, false);
         public float BestScore { get; set; } //the score achieved by the best dna
 
-        public static Dictionary<string, int> ConstraintCounts = new Dictionary<string, int>() { { "BTB", 0 }, { "BTB_TIME", 0 }, { "CAN_SHARE_ROOM", 0 }, { "DIFF_TIME", 0 }, { "MEET_WITH", 0 }, { "NHB(1.5)", 0 }, { "NHB_GTE(1)", 0 }, { "SAME_DAYS", 0 }, { "SAME_INSTR", 0 }, { "SAME_ROOM", 0 }, { "SAME_START", 0 }, { "SAME_TIME", 0 }, { "SAME_STUDENTS", 0 }, { "SPREAD", 0 } };
+        public static Dictionary<string, int> ConstraintCounts = new Dictionary<string, int>() { { "BTB", 0 }, { "BTB_TIME", 0 }, { "CAN_SHARE_ROOM", 0 }, { "DIFF_TIME", 0 }, { "MEET_WITH", 0 }, { "NHB(1.5)", 0 }, { "NHB_GTE(1)", 0 }, { "SAME_DAYS", 0 }, { "SAME_INSTR", 0 }, { "SAME_ROOM", 0 }, { "SAME_START", 0 }, { "SAME_TIME", 0 }, { "SAME_STUDENTS", 0 }, { "SPREAD", 0 }};
 
         public Constraint(int id, string type, float pref, bool isHardConstraint, int[] classIDs) {
             ID = id;
@@ -35,23 +35,31 @@ namespace FYPTimetablingSoftware {
                 FitnessFunction = BTB_TIME;
                 ConstraintCounts[type] = ConstraintCounts[type] + 1;
             } else if(type == "CAN_SHARE_ROOM") {
+
                 ConstraintCounts[type] = ConstraintCounts[type] + 1;
             } else if(type == "MEET_WITH") {
+                FitnessFunction = MEET_WITH;
                 ConstraintCounts[type] = ConstraintCounts[type] + 1;
             } else if(type == "NHB(1.5)") {
+                FitnessFunction = NHB1_5;
                 ConstraintCounts[type] = ConstraintCounts[type] + 1;
             } else if(type == "NHB_GTE(1)") {
+                FitnessFunction = NHB_GTE1;
                 ConstraintCounts[type] = ConstraintCounts[type] + 1;
             } else if(type == "SAME_DAYS") {
+                FitnessFunction = SAME_DAYS;
                 ConstraintCounts[type] = ConstraintCounts[type] + 1;
             } else if(type == "SAME_INSTR") {
+                FitnessFunction = SAME_INSTR;
                 ConstraintCounts[type] = ConstraintCounts[type] + 1;
             } else if(type == "SAME_ROOM") {
                 FitnessFunction = SAME_ROOM;
                 ConstraintCounts[type] = ConstraintCounts[type] + 1;
             } else if(type == "SAME_START") {
+                FitnessFunction = SAME_START;
                 ConstraintCounts[type] = ConstraintCounts[type] + 1;
             } else if(type == "SAME_TIME") {
+                FitnessFunction = SAME_TIME;
                 ConstraintCounts[type] = ConstraintCounts[type] + 1;
             } else if(type == "SAME_STUDENTS") {
                 FitnessFunction = SAME_STUDENTS;
@@ -110,6 +118,9 @@ namespace FYPTimetablingSoftware {
                     }
                 }
 
+            }
+            if (IsHardConstraint) {
+                return 0;
             }
             float temp = (float)(adhered) / (float)(ClassIDs.Length);
             result = temp * Pref;
@@ -232,17 +243,19 @@ namespace FYPTimetablingSoftware {
             int numberOfBTB = 0;
             foreach(var g1 in cGenes) {
                 foreach(var g2 in cGenes) {
-                    if(g1.SolutionTime.Start+g1.SolutionTime.Length == g2.SolutionTime.Start || g1.SolutionTime.Start + g1.SolutionTime.Length == g2.SolutionTime.Start+1) {
-                        //checks if the end of g1 is equal to the start of g2 (or 1 slot later)
-                        if(g1.SolutionRoom.ID == g2.SolutionRoom.ID) { //check if its the same room
-                            numberOfBTB++;
+                    if (g1.SolutionTime.Days.Equals(g2.SolutionTime.Days)) {
+                        if (g1.SolutionTime.Start + g1.SolutionTime.Length == g2.SolutionTime.Start || g1.SolutionTime.Start + g1.SolutionTime.Length == g2.SolutionTime.Start + 1) {
+                            //checks if the end of g1 is equal to the start of g2 (or 1 slot later)
+                            if (g1.SolutionRoom.ID == g2.SolutionRoom.ID) { //check if its the same room
+                                numberOfBTB++;
+                            }
                         }
                     }
                 }
             }
             
             if(numberOfBTB == cGenes.Count - 1) {
-                return IsHardConstraint ? 0 : Pref; //satisfies therefore no penalty 
+                return IsHardConstraint ? 0 : Pref; //satisfied therefore no penalty 
             } else {
                 return IsHardConstraint ? Pref : 0; //violated therefore penalty (unless p then this is a good thing)
             }
@@ -267,6 +280,177 @@ namespace FYPTimetablingSoftware {
             }
 
         }
+
+        private float SAME_TIME(List<SolutionGene> cGenes) {
+            int numberOfSameTime = 0;
+            cGenes.Sort((a, b) => {
+                if (a.SolutionTime.Length > b.SolutionTime.Length) {
+                    return -1;
+                } else if (a.SolutionTime.Length < b.SolutionTime.Length) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            });
+            
+            for(int i = 0; i < cGenes.Count; i++) {
+                if (i != cGenes.Count - 1) {
+                    var t1 = cGenes[i].SolutionTime;
+                    var t2 = cGenes[i + 1].SolutionTime;
+                    if(t1.Start <= t2.Start && t1.Start+t1.Length >= t2.Start + t2.Length) {
+                        numberOfSameTime++;
+                    }
+                }
+            }
+            if(numberOfSameTime == cGenes.Count - 1) {
+                return IsHardConstraint ? 0 : Pref;
+            } else {
+                return IsHardConstraint ? Pref : 0; //violated therefore penalty (unless p then this is a good thing)
+            }
+        }
+
+        private float SAME_START(List<SolutionGene> cGenes) {
+            int numberSameStart = 0;
+            SolutionGene[] genesArr = cGenes.ToArray();
+            for (int i = 0; i < cGenes.Count; i++) {
+                var t1 = cGenes[i].SolutionTime;
+                cGenes.RemoveAt(i);
+                for (int j = 0; j < cGenes.Count; j++) {
+                    var t2 = cGenes[j].SolutionTime;
+                    if (t1.Start >= t2.Start && t1.Start < t2.Start+6) {
+                        //if g1 and g2 are within the same 30min timeslot
+                        numberSameStart++;
+                    }
+                }
+            }
+            if (numberSameStart == genesArr.Length - 1) {
+                return IsHardConstraint ? 0 : Pref;
+            } else {
+                return IsHardConstraint ? Pref : 0; //violated therefore penalty (unless p then this is a good thing)
+            }
+        }
+
+        private float SAME_DAYS(List<SolutionGene> cGenes) {
+            int numberOfSameDays = 0;
+            BitArray[] daysArray = new BitArray[cGenes.Count];
+            SolutionGene[] genesArr = cGenes.ToArray();
+            cGenes.Sort((a, b) => {
+                if (a.SolutionTime.NrOfDays > b.SolutionTime.NrOfDays) {
+                    return -1;
+                } else if (a.SolutionTime.NrOfDays < b.SolutionTime.NrOfDays) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            });
+
+            for (int i = 0; i < cGenes.Count; i++) {
+                var d1 = cGenes[i].SolutionTime.Days;
+                daysArray[i] = d1;
+                cGenes.RemoveAt(i);
+                for (int j = 0; j < cGenes.Count; j++) {
+                    var d2 = cGenes[j].SolutionTime.Days;
+                    bool bad = false;
+                    for(int k = 0; k < d1.Length; k++) {
+                        if (d2[k] && !d1[k]) {
+                            //bad, not same day
+                            bad = true;
+                        }
+                    }
+                    if (!bad) {
+                        numberOfSameDays++;
+                    }
+                }
+            }
+
+            if(numberOfSameDays == genesArr.Length - 1) {
+                return IsHardConstraint ? 0 : Pref;
+            } else {
+                return IsHardConstraint ? Pref : 0; //violated therefore penalty (unless p then this is a good thing)
+            }
+        }
+
+        private float MEET_WITH(List<SolutionGene> cGenes) {
+            float score = SAME_DAYS(new List<SolutionGene>(cGenes)) + SAME_ROOM(new List<SolutionGene>(cGenes)) + SAME_TIME(new List<SolutionGene>(cGenes));
+            if(score == 0) {
+                return 0;
+            } else { //this constraint is always R so no need to check
+                return Pref;
+            }
+        }
+
+        private float SAME_INSTR(List<SolutionGene> cGenes) {
+            List<SolutionGene> listClone = new List<SolutionGene>(cGenes);
+            float score = DIFF_TIME(listClone);
+            if(score != 0) {
+                return Pref; //this means classes overlap so bad
+            }
+            //score is guaranteed to be 0 after this point 
+            foreach (var g1 in cGenes) {
+                foreach (var g2 in cGenes) {
+                    if (g1.SolutionTime.Start + g1.SolutionTime.Length == g2.SolutionTime.Start || g1.SolutionTime.Start + g1.SolutionTime.Length == g2.SolutionTime.Start + 1) {
+                        //checks if the end of g1 is equal to the start of g2 (or 1 slot later)
+                        int distance = g1.SolutionRoom.CalculateRoomDistance(g2.SolutionRoom);
+                        if(distance >0 && distance <= 50 && score < 1) {
+                            score = 1; //set score to 1 unless its already higher
+                        } else if (distance > 50 && distance <= 100) {
+                            score = 4;
+                        } else if(distance > 100){
+                            return Pref; //discance > 100 is prohibited
+                        }
+                    }
+                }
+            }
+
+            return score;
+        }
+
+        private float NHB1_5(List<SolutionGene> cGenes) {
+            int numberOfNHB = 0;
+            foreach (var g1 in cGenes) {
+                foreach (var g2 in cGenes) {
+                    if (g1.SolutionTime.Days.Equals(g2.SolutionTime.Days)) {
+                        if (g1.SolutionTime.Start + g1.SolutionTime.Length == g2.SolutionTime.Start+18) {
+                            //checks if the end of g1 is 1 and a half h ours later than g2 start (18 units)
+                            numberOfNHB++;
+                        }
+                    }
+                }
+            }
+
+            if (numberOfNHB == cGenes.Count - 1) {
+                return IsHardConstraint ? 0 : Pref; //satisfied therefore no penalty 
+            } else {
+                return IsHardConstraint ? Pref : 0; //violated therefore penalty (unless p then this is a good thing)
+            }
+        }
+
+        private float NHB_GTE1(List<SolutionGene> cGenes) {
+            int numberOfNHB_GTE = 0;
+            foreach (var g1 in cGenes) {
+                foreach (var g2 in cGenes) {
+                    if (g1.SolutionTime.Days.Equals(g2.SolutionTime.Days)) {
+                        if (g1.SolutionTime.Start + g1.SolutionTime.Length >= g2.SolutionTime.Start + 12) {
+                            //checks if the end of g1 is 1 and a half h ours later than g2 start (18 units)
+                            numberOfNHB_GTE++;
+                        }
+                    }
+                }
+            }
+
+            if (numberOfNHB_GTE == cGenes.Count - 1) {
+                return IsHardConstraint ? 0 : Pref; //satisfied therefore no penalty 
+            } else {
+                return IsHardConstraint ? Pref : 0; //violated therefore penalty (unless p then this is a good thing)
+            }
+        }
+
+        private float CAN_SHARE_ROOM(List<SolutionGene> cGenes) {
+            //This doesn't seem to be a real constraint, more of a property.
+            return 0;
+        }
+
+
 
     }
 }

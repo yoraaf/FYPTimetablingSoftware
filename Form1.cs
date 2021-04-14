@@ -132,6 +132,9 @@ namespace FYPTimetablingSoftware {
                 float fitness = SoftConstraints[i].GetFitness(dna.Genes);
                 //constraintResults += SoftConstraints[i].Type + "\t" + fitness + "\r\n";
                 constraintResults += SoftConstraints[i].Type + " "+fitness + " ; ";
+                if (fitness > 0) {
+                    dna.ConstraintViolations[SoftConstraints[i].Type] += 1;
+                }
                 score += fitness;
             }
 
@@ -139,6 +142,9 @@ namespace FYPTimetablingSoftware {
                 float fitness = HardConstraints[i].GetFitness(dna.Genes);
                 //constraintResults += SoftConstraints[i].Type + "\t" + fitness + "\r\n";
                 constraintResults += HardConstraints[i].Type + " " + fitness + " ; ";
+                if (fitness > 0) {
+                    dna.ConstraintViolations[HardConstraints[i].Type] += 1;
+                }
                 score += fitness;
             }
             float timePref = 0;
@@ -175,7 +181,12 @@ namespace FYPTimetablingSoftware {
             for(int i = 0; i < 50; i++) {
                 aaa += constraintResultsArr[i];
             }*/
-            AllMembersBox.Text = ga.BestDNA.ConstraintResult;
+            string constraintViolations = "";
+            foreach(var entry in ga.BestDNA.ConstraintViolations) {
+                constraintViolations += entry.Key + ": " + entry.Value + "\r\n";
+            }
+            //AllMembersBox.Text = ga.BestDNA.ConstraintResult;
+            AllMembersBox.Text = constraintViolations;
             if (improvement > 0.0001) {
                 /*string constraintResults = "";
                 for (int i = 0; i < SoftConstraints.Length; i++) {
