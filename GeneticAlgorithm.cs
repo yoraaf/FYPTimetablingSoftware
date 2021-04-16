@@ -15,6 +15,7 @@ namespace FYPTimetablingSoftware {
 		public int Elitism;
 		public float MutationRate;
 		public static object randLock = new object();
+		public static object fitLock = new object();
 		private List<DNA<T>> newPopulation;
 		private static Random random;
 		private float fitnessSum;
@@ -122,19 +123,41 @@ namespace FYPTimetablingSoftware {
 
 		private void CalculateFitness() {
 			fitnessSum = 0;
-			DNA<T> best = Population[0];
+			BestDNA = Population[0];
 
-			for (int i = 0; i < Population.Count; i++) {
-				fitnessSum += Population[i].CalculateFitness(i);
+			Thread t = new Thread(new ThreadStart(fitnessThread));
+			t.Name = "FitnessThread1";
+			t.Start();
 
-				if (Population[i].Fitness < best.Fitness) {
-					best = Population[i];
+			for (int i = 0; i < Population.Count/2; i++) {
+				var fit = Population[i].CalculateFitness(i);
+				lock (fitLock) {
+					fitnessSum += fit;
+					if (Population[i].Fitness < BestDNA.Fitness) {
+						BestDNA = Population[i];
+					}
 				}
 			}
+			Debug.WriteLine("main fitness thread done");
+			t.Join();
 
-			BestFitness = best.Fitness;
-			best.Genes.CopyTo(BestGenes, 0);
-			BestDNA = best;
+
+			BestFitness = BestDNA.Fitness;
+			BestDNA.Genes.CopyTo(BestGenes, 0);
+			//BestDNA = best;
+		}
+
+		private void fitnessThread() {
+			for (int i = Population.Count/2; i < Population.Count; i++) {
+				var fit = Population[i].CalculateFitness(i);
+				lock (fitLock) {
+					fitnessSum += fit;
+					if (Population[i].Fitness < BestDNA.Fitness) {
+						BestDNA = Population[i];
+					}
+				}
+			}
+			Debug.WriteLine("Fitness second thread done");
 		}
 
 		private double GetFitnessSum() {

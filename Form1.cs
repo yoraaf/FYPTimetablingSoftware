@@ -149,6 +149,7 @@ namespace FYPTimetablingSoftware {
                 constraintResults += SoftConstraints[i].Type + " "+fitness + " ; ";
                 if (fitness > 0) {
                     dna.ConstraintViolations[SoftConstraints[i].Type] += 1;
+                    dna.TotalViolations++;
                 }
                 score += fitness;
             }
@@ -159,6 +160,7 @@ namespace FYPTimetablingSoftware {
                 constraintResults += HardConstraints[i].Type + " " + fitness + " ; ";
                 if (fitness > 0) {
                     dna.ConstraintViolations[HardConstraints[i].Type] += 1;
+                    dna.TotalViolations++;
                 }
                 score += fitness;
             }
@@ -201,7 +203,7 @@ namespace FYPTimetablingSoftware {
                 constraintViolations += entry.Key + ": " + entry.Value + "\r\n";
             }
             //AllMembersBox.Text = ga.BestDNA.ConstraintResult;
-            AllMembersBox.Text = constraintViolations;
+            AllMembersBox.Text = constraintViolations+"Total Violations: "+ga.BestDNA.TotalViolations;
             if (improvement > 0.0001) {
                 /*string constraintResults = "";
                 for (int i = 0; i < SoftConstraints.Length; i++) {

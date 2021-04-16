@@ -14,8 +14,10 @@ namespace FYPTimetablingSoftware {
 		public int ID { get; private set; }
 		public string ConstraintResult = "";
 		public Dictionary<string, int> ConstraintViolations = new Dictionary<string, int>() { { "BTB", 0 }, { "BTB_TIME", 0 }, { "CAN_SHARE_ROOM", 0 }, { "DIFF_TIME", 0 }, { "MEET_WITH", 0 }, { "NHB(1.5)", 0 }, { "NHB_GTE(1)", 0 }, { "SAME_DAYS", 0 }, { "SAME_INSTR", 0 }, { "SAME_ROOM", 0 }, { "SAME_START", 0 }, { "SAME_TIME", 0 }, { "SAME_STUDENTS", 0 }, { "SPREAD", 0 } };
+		public int TotalViolations { get; set; }
 		public DNA(int id, int size, Random random, Func<Klas, T> getRandomGene, Func<int, float> fitnessFunction, bool shouldInitGenes = true) {
 			Genes = new T[size];
+			TotalViolations = 0;
 			this.random = random;
 			this.getRandomGene = getRandomGene;
 			this.fitnessFunction = fitnessFunction;
