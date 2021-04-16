@@ -41,6 +41,8 @@ namespace FYPTimetablingSoftware {
         private string[] constraintResultsArr = new string[500];
         private long AverageTimePerGen = 0;
 
+        private bool LoopRunning = true;
+
         private GeneticAlgorithm<SolutionGene> ga;
         private System.Random random;
         public Form1() {
@@ -63,8 +65,8 @@ namespace FYPTimetablingSoftware {
             fitnessSeries = fitnessChart.Series.Add("fitness");
             fitnessSeries.ChartType = SeriesChartType.Line;
             aTimer = new System.Timers.Timer(1);
-            aTimer.Elapsed += OnTimedEvent;
-            aTimer.Enabled = enabled;
+            //aTimer.Elapsed += OnTimedEvent;
+            //aTimer.Enabled = enabled;
 
             random = new System.Random();
             ga = new GeneticAlgorithm<SolutionGene>(populationSize, XMLParser.GetKlasList().Length, random, GetRandomSolutionGene, FitnessFunction, UpdateAlgorithm, elitism, mutationRate);
@@ -92,6 +94,16 @@ namespace FYPTimetablingSoftware {
             }
         }
 
+        private void AlgorithmLoop() {
+            Debug.WriteLine("Loop started");
+            while (LoopRunning) {
+                if (!aRunning) {
+                    UpdateAlgorithm();
+                }
+            }
+            Debug.WriteLine("Loop ended/paused");
+        }
+
         public void UpdateAlgorithm() {
             if (!enabled) { return; } //if something paused or stopped the algorithm, don't update anymore
             aRunning = true;
@@ -105,6 +117,7 @@ namespace FYPTimetablingSoftware {
             
             if (ga.Generation == 100 || ga.BestFitness == 1) { 
                 enabled = false;
+                LoopRunning = false;
                 AverageTimePerGen = stopwatch.ElapsedMilliseconds/100;
                 
                 Console.WriteLine("------------------------------------------------------------------------------");
@@ -116,6 +129,8 @@ namespace FYPTimetablingSoftware {
 
         public void ResumeAlgorithm() {
             enabled = true;
+            LoopRunning = true;
+            AlgorithmLoop();
             aTimer.Enabled = enabled;
         }
 
@@ -208,17 +223,6 @@ namespace FYPTimetablingSoftware {
             if(ga.Generation == 101) {
                 AverageValueLbl.Text = AverageTimePerGen + "ms";
             }
-            //Console.WriteLine("Generation" + generation.ToString() + "\t Fitness" + bestFitness.ToString() /*+"\n genes:" + CharArrayToString(bestGenes)*/);
-            /*int n = nOfMembersToDisplay;
-            if (nOfMembersToDisplay > populationSize) { n = populationSize;  }
-            var sb = new StringBuilder();
-            for (int i = 0; i < n; i++) { //loop through the top n of population
-                foreach (var c in getGenes(i)) {
-                    sb.Append(c);
-                }
-                sb.AppendLine();
-            }
-            AllMembersBox.Text = sb.ToString();*/
         }
 
         private string CharArrayToString(char[] charArray) {
@@ -248,6 +252,7 @@ namespace FYPTimetablingSoftware {
                 }
                 Console.WriteLine("Paused algorithm \r\nGeneration: " + ga.Generation + " ; Fitness: " + ga.BestFitness);
                 enabled = false;
+                LoopRunning = false;
                 aTimer.Enabled = enabled;
             });
             

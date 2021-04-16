@@ -22,6 +22,7 @@ namespace FYPTimetablingSoftware {
 		private Func<int, float> fitnessFunction;
 		private Action updateAlgorithm;
 		private readonly Klas[] KlasArr;
+		private DNA<T>[] NewGenerationArr;
 
 		public GeneticAlgorithm(int populationSize, int dnaSize, Random random, Func<Klas, T> getRandomGene, Func<int, float> fitnessFunction, Action updateAlgorithm,
 			int elitism, float mutationRate = 0.01f) {
@@ -36,6 +37,7 @@ namespace FYPTimetablingSoftware {
 			this.fitnessFunction = fitnessFunction;
 			this.updateAlgorithm = updateAlgorithm;
 			BestGenes = new T[dnaSize];
+			NewGenerationArr = new DNA<T>[populationSize];
 			KlasArr = XMLParser.GetKlasList(); //The parser must be ran before the algorithm starts
 
 			//When the genetic algorithm is created the initial population is generated as follows:
@@ -53,10 +55,8 @@ namespace FYPTimetablingSoftware {
             }
 			return output;
         }
-		public void NewGeneration(int numNewDNA = 0, bool crossoverNewDNA = false) {
-			int finalCount = Population.Count + numNewDNA;
-
-			if (finalCount <= 0) {
+		public void NewGeneration() {
+			if (Population.Count <= 0) {
 				return;
 			}
 
@@ -65,31 +65,41 @@ namespace FYPTimetablingSoftware {
 				Population.Sort(CompareDNA);
 			}
 			newPopulation.Clear();
+			Array.Clear(NewGenerationArr, 0, NewGenerationArr.Length);
 
 			for (int i = 0; i < Population.Count; i++) {
 				if (i < Elitism && i < Population.Count) { //elitism makes it so that the top (5) make it into the next generation 
-					newPopulation.Add(Population[i]);
-				} else if (i < Population.Count || crossoverNewDNA) {
+					NewGenerationArr[i] = Population[i];
+				} else if (i < Population.Count) {
 					DNA<T> parent1 = ChooseParent();
 					DNA<T> parent2 = ChooseParent();
 
 					DNA<T> child = parent1.Crossover(parent2);
 
 					child.Mutate(MutationRate);
-					/*Debug.WriteLine("Parent 1: "+ ArrayToString(parent1.Genes));
-					Debug.WriteLine("Parent 2: "+ ArrayToString(parent2.Genes));
-					Debug.WriteLine("Child:    "+ ArrayToString(child.Genes));*/
-					newPopulation.Add(child);
-				} else {
-					newPopulation.Add(new DNA<T>(dnaSize, random, getRandomGene, fitnessFunction, shouldInitGenes: true));
-				}
+					NewGenerationArr[i] = child;
+				} 
 			}
 
-			List<DNA<T>> tmpList = Population;
-			Population = newPopulation;
-			newPopulation = tmpList;
+			Population = NewGenerationArr.ToList(); 
 
 			Generation++;
+		}
+
+		private void ThreadProc() {
+			for (int i = 0; i < Population.Count; i++) {
+				if (i < Elitism && i < Population.Count) { //elitism makes it so that the top (5) make it into the next generation 
+					newPopulation.Add(Population[i]);
+				} else if (i < Population.Count) {
+					DNA<T> parent1 = ChooseParent();
+					DNA<T> parent2 = ChooseParent();
+
+					DNA<T> child = parent1.Crossover(parent2);
+
+					child.Mutate(MutationRate);
+					newPopulation.Add(child);
+				}
+			}
 		}
 
 		private int CompareDNA(DNA<T> a, DNA<T> b) {
