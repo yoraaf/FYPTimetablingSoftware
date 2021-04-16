@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 
 namespace FYPTimetablingSoftware {
 	public class GeneticAlgorithm<T> {
@@ -13,9 +14,9 @@ namespace FYPTimetablingSoftware {
 
 		public int Elitism;
 		public float MutationRate;
-
+		public static object randLock = new object();
 		private List<DNA<T>> newPopulation;
-		private Random random;
+		private static Random random;
 		private float fitnessSum;
 		private int dnaSize;
 		private Func<Klas, T> getRandomGene;
@@ -31,7 +32,7 @@ namespace FYPTimetablingSoftware {
 			MutationRate = mutationRate;
 			Population = new List<DNA<T>>(populationSize);
 			newPopulation = new List<DNA<T>>(populationSize);
-			this.random = random;
+			GeneticAlgorithm<T>.random = random;
 			this.dnaSize = dnaSize;
 			this.getRandomGene = getRandomGene;
 			this.fitnessFunction = fitnessFunction;
@@ -42,7 +43,7 @@ namespace FYPTimetablingSoftware {
 
 			//When the genetic algorithm is created the initial population is generated as follows:
 			for (int i = 0; i < populationSize; i++) {
-				Population.Add(new DNA<T>(dnaSize, random, getRandomGene, fitnessFunction, shouldInitGenes: true));
+				Population.Add(new DNA<T>(i, dnaSize, random, getRandomGene, fitnessFunction, shouldInitGenes: true));
 			}
 			Console.ForegroundColor = ConsoleColor.Green;
 			Console.WriteLine("-------------------------------------");
@@ -67,19 +68,24 @@ namespace FYPTimetablingSoftware {
 			newPopulation.Clear();
 			Array.Clear(NewGenerationArr, 0, NewGenerationArr.Length);
 
-			for (int i = 0; i < Population.Count; i++) {
-				if (i < Elitism && i < Population.Count) { //elitism makes it so that the top (5) make it into the next generation 
+			Thread t = new Thread(new ThreadStart(ThreadProc));
+			t.Start();
+
+			for (int i = 0; i < Population.Count/2; i++) {
+				if (i < Elitism && i < Population.Count/2) { //elitism makes it so that the top (5) make it into the next generation 
 					NewGenerationArr[i] = Population[i];
 				} else if (i < Population.Count) {
 					DNA<T> parent1 = ChooseParent();
 					DNA<T> parent2 = ChooseParent();
 
-					DNA<T> child = parent1.Crossover(parent2);
+					DNA<T> child = parent1.Crossover(parent2, i);
 
 					child.Mutate(MutationRate);
 					NewGenerationArr[i] = child;
 				} 
 			}
+			Debug.WriteLine("Main thread done");
+			t.Join();
 
 			Population = NewGenerationArr.ToList(); 
 
@@ -87,19 +93,20 @@ namespace FYPTimetablingSoftware {
 		}
 
 		private void ThreadProc() {
-			for (int i = 0; i < Population.Count; i++) {
-				if (i < Elitism && i < Population.Count) { //elitism makes it so that the top (5) make it into the next generation 
-					newPopulation.Add(Population[i]);
-				} else if (i < Population.Count) {
+			for (int j = Population.Count/2; j < Population.Count; j++) {
+				if (j < Elitism && j < Population.Count) { //elitism makes it so that the top (5) make it into the next generation 
+					NewGenerationArr[j] = Population[j];
+				} else if (j < Population.Count) {
 					DNA<T> parent1 = ChooseParent();
 					DNA<T> parent2 = ChooseParent();
 
-					DNA<T> child = parent1.Crossover(parent2);
+					DNA<T> child = parent1.Crossover(parent2, j);
 
 					child.Mutate(MutationRate);
-					newPopulation.Add(child);
+					NewGenerationArr[j] = child;
 				}
 			}
+			Debug.WriteLine("second thread done");
 		}
 
 		private int CompareDNA(DNA<T> a, DNA<T> b) {
@@ -140,14 +147,22 @@ namespace FYPTimetablingSoftware {
 
 		private DNA<T> ChooseParent() {
 			//tournament style selection
-			double randomNumber = GetFitnessSum() * random.NextDouble();
+			double randomNumber = GetFitnessSum() * LockedRandomDouble();
 			int tournamentSize =  (Int32)Math.Floor(Population.Count * 0.2);
 			DNA<T>[] tournamentMembers = new DNA<T>[tournamentSize];
 			for (int i = 0; i < tournamentSize; i++) {
 				DNA<T> x;
+				int testCounter = 0;
+				List<int> logIDList = new List<int>();
 				do {
 					//add random person from population to the tournament and make sure they aren't in already
-					x = Population[random.Next(0, Population.Count)];
+					testCounter++;
+                    if (testCounter > 500) {
+						Debug.WriteLine("broken");
+                    }
+					int id = LockedRandomInt(0, Population.Count);
+					logIDList.Add(id);
+					x = Population[id];
 				} while (tournamentMembers.Contains(x));
 				tournamentMembers[i] = x;
 			}
@@ -156,6 +171,17 @@ namespace FYPTimetablingSoftware {
 			//Console.WriteLine("top ")
 			return tournamentMembers[0];
 		}
+
+		public static int LockedRandomInt(int min, int max) {
+            lock (randLock) {
+				return random.Next(min, max);
+            }
+        }
+		public static double LockedRandomDouble() {
+            lock (randLock) {
+				return random.NextDouble();
+            }
+        }
 
 		private DNA<T> ChooseParent_old() {
 			double r = random.NextDouble();

@@ -73,8 +73,8 @@ namespace FYPTimetablingSoftware {
         }
 
         private SolutionGene GetRandomSolutionGene(Klas k) {
-            Room a = (k.Rooms.Length>0) ? k.Rooms[random.Next(0, k.Rooms.Length)] : null;
-            KlasTime b = (k.Times.Length>0) ? k.Times[random.Next(0, k.Times.Length)] : null;
+            Room a = (k.Rooms.Length>0) ? k.Rooms[GeneticAlgorithm<SolutionGene>.LockedRandomInt(0, k.Rooms.Length)] : null;
+            KlasTime b = (k.Times.Length>0) ? k.Times[GeneticAlgorithm<SolutionGene>.LockedRandomInt(0, k.Times.Length)] : null;
             SolutionGene output = new SolutionGene(k.ID, a, b);
             return output;
         }
@@ -299,21 +299,19 @@ namespace FYPTimetablingSoftware {
         }
 
         private void randomTestButton_Click(object sender, EventArgs e) {
-            for(int i = 0; i < ga.BestGenes.Length; i++) {
+            
+            Console.WriteLine("Activated breakpoint");
+
+        }
+
+        private void TestButton2_Click(object sender, EventArgs e) {
+            for (int i = 0; i < ga.BestGenes.Length; i++) {
                 Debug.WriteLine(ga.BestGenes[i]);
             }
             Room a = XMLParser.GetRoomList()[0];
             Room b = XMLParser.GetRoomList()[1];
             int testDistance = a.CalculateRoomDistance(b);
             Console.WriteLine("Distance between room 1 and 2: " + testDistance);
-            Console.WriteLine("Activated breakpoint");
-
-        }
-
-        private void TestButton2_Click(object sender, EventArgs e) {
-            List<SolutionGene> cGenes = new List<SolutionGene>();
-            Room a = XMLParser.GetRoomList()[0];
-            Room b = XMLParser.GetRoomList()[1];
         }
     }
 }
