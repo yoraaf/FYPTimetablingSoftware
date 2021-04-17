@@ -25,6 +25,8 @@ namespace FYPTimetablingSoftware {
 		private Action updateAlgorithm;
 		private readonly Klas[] KlasArr;
 		private DNA<T>[] NewGenerationArr;
+		private int threadPoolCounter = 0;
+		public static ManualResetEvent DoneEvt;
 
 		public GeneticAlgorithm(int populationSize, int dnaSize, Random random, Func<Klas, T> getRandomGene, Func<int, float> fitnessFunction, Action updateAlgorithm,
 			int elitism, float mutationRate = 0.01f) {
@@ -124,27 +126,41 @@ namespace FYPTimetablingSoftware {
 		private void CalculateFitness() {
 			fitnessSum = 0;
 			BestDNA = Population[0];
+			threadPoolCounter = Population.Count;
+			DoneEvt = new ManualResetEvent(false);
 
-			Thread t = new Thread(new ThreadStart(fitnessThread));
+			/*Thread t = new Thread(new ThreadStart(fitnessThread));
 			t.Name = "FitnessThread1";
-			t.Start();
+			t.Start();*/
+			ThreadPool.SetMaxThreads(25, 25);
 
-			for (int i = 0; i < Population.Count/2; i++) {
-				var fit = Population[i].CalculateFitness(i);
-				lock (fitLock) {
-					fitnessSum += fit;
-					if (Population[i].Fitness < BestDNA.Fitness) {
-						BestDNA = Population[i];
-					}
-				}
+			for (int i = 0; i < Population.Count; i++) {
+				ThreadPool.QueueUserWorkItem(FitnessThreadPoolMethod, i);
 			}
-			Debug.WriteLine("main fitness thread done");
-			t.Join();
-
+			Debug.WriteLine("Added all events");
+			//t.Join();
+			DoneEvt.WaitOne();
+			Debug.WriteLine("done waiting");
 
 			BestFitness = BestDNA.Fitness;
 			BestDNA.Genes.CopyTo(BestGenes, 0);
 			//BestDNA = best;
+		}
+
+		private void FitnessThreadPoolMethod(object number) {
+			int n = (int)number;
+			var fit = Population[n].CalculateFitness(n);
+			Debug.WriteLine("[" + n + "] Fitness: " + fit);
+			lock (fitLock) {
+				fitnessSum += fit;
+				if (Population[n].Fitness < BestDNA.Fitness) {
+					BestDNA = Population[n];
+				}
+			}
+
+			if (Interlocked.Decrement(ref threadPoolCounter) == 0) {
+				DoneEvt.Set();
+			};
 		}
 
 		private void fitnessThread() {

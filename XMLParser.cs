@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -72,7 +73,16 @@ namespace FYPTimetablingSoftware {
             }
             ReadGroupConstraints();
 
-            Console.WriteLine("klasList: " + KlasList);
+            List<int> cClassIDs = new List<int>();
+            for (int i = 0;i< KlasList.Length; i++) {
+                if (KlasList[i].Rooms.Length > 0) {
+                    cClassIDs.Add(KlasList[i].ID);
+                } else {
+                    Debug.WriteLine("Klas without Room: " + KlasList[i].ID);
+                }
+            }
+            SoftConstraints[SoftConstraints.Length - 1] = new Constraint(404, "ROOM_CONFLICTS", 0, false, cClassIDs.ToArray());
+            Debug.WriteLine("klasList: " + KlasList);
         }
         
         public static Klas[] GetKlasList() {
@@ -125,7 +135,7 @@ namespace FYPTimetablingSoftware {
                     nrOfHardC++;
                 }
             }
-            SoftConstraints = new Constraint[nrOfSoftC];
+            SoftConstraints = new Constraint[nrOfSoftC+1]; //this will increase by 1 to add the room conflicts 
             HardConstraints = new Constraint[nrOfHardC];
             int i1 = 0;
             int i2 = 0;
@@ -137,6 +147,8 @@ namespace FYPTimetablingSoftware {
                 int[] cClassIDs = new int[currentConstraint.ChildNodes.Count];
                 if (currentConstraint.HasChildNodes) {
                     for (int j = 0; j<currentConstraint.ChildNodes.Count;j++) {
+                        //get the ID attribute from each child node, subtract one and search for that in the klas list 
+                        //This can be simplified but it isn't impacting performance so I'd rather not touch it 
                         int nID = GetIntAttr(currentConstraint.ChildNodes.Item(j), "id");
                         cClassIDs[j] = KlasList[nID - 1].ID;
                     }

@@ -40,6 +40,9 @@ namespace FYPTimetablingSoftware {
         private string constraintResults = "";
         private string[] constraintResultsArr = new string[500];
         private long AverageTimePerGen = 0;
+        public static int TotalConstraintNr;
+        public static float MaxViolationWeight;
+        public static float MinViolationWeight;
 
         private bool LoopRunning = true;
 
@@ -142,12 +145,22 @@ namespace FYPTimetablingSoftware {
         private float FitnessFunction(int index) { //calculate fitness of 1 member of the population (DNA)
             float score = 0;
             DNA<SolutionGene> dna = ga.Population[index];
+
+            foreach (var key in dna.ConstraintViolations.Keys.ToList()) {
+                dna.ConstraintViolations[key] = 0;
+            }
+            dna.TotalViolations = 0;
+
             string constraintResults = "";
             for (int i = 0; i < SoftConstraints.Length; i++) {
                 float fitness = SoftConstraints[i].GetFitness(dna.Genes);
                 //constraintResults += SoftConstraints[i].Type + "\t" + fitness + "\r\n";
                 constraintResults += SoftConstraints[i].Type + " "+fitness + " ; ";
-                if (fitness > 0) {
+                if(SoftConstraints[i].Type == "ROOM_CONFLICTS") {
+                    int v = (int)Math.Floor(fitness / Constraint.RoomConflictWeight);
+                    dna.ConstraintViolations[SoftConstraints[i].Type] += v;
+                    dna.TotalViolations +=v;
+                } else if (fitness > 0) {
                     dna.ConstraintViolations[SoftConstraints[i].Type] += 1;
                     dna.TotalViolations++;
                 }
@@ -298,6 +311,25 @@ namespace FYPTimetablingSoftware {
             }
             Console.WriteLine("Dataset loaded succesfully");
             startButton.Enabled = true;
+            TotalConstraintNr = SoftConstraints.Length + HardConstraints.Length;
+            MaxViolationWeight = 0;
+            for(int i = 0; i < SoftConstraints.Length; i++) {
+                if (SoftConstraints[i].Pref > 0) {
+                    MaxViolationWeight += SoftConstraints[i].Pref;
+                } else if(SoftConstraints[i].Pref < 0) {
+                    MinViolationWeight += SoftConstraints[i].Pref;
+                }
+            }
+            for(int i = 0; i < HardConstraints.Length; i++) {
+                if (HardConstraints[i].Pref > 0) {
+                    MaxViolationWeight += HardConstraints[i].Pref;
+                } else if(HardConstraints[i].Pref > 0){
+                    MinViolationWeight += HardConstraints[i].Pref;
+                }
+            }
+            MaxWeightValueLbl.Text = "" + MaxViolationWeight;
+            MinWeightValueLbl.Text = "" + MinViolationWeight;
+            NrOfConstraintsValuelbl.Text = ""+TotalConstraintNr;
         }
 
         private void randomTestButton_Click(object sender, EventArgs e) {

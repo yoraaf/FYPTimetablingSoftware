@@ -45,6 +45,12 @@
             this.AverageValueLbl = new System.Windows.Forms.Label();
             this.AverageLbl = new System.Windows.Forms.Label();
             this.TestButton2 = new System.Windows.Forms.Button();
+            this.NrOfConstraintsLbl = new System.Windows.Forms.Label();
+            this.NrOfConstraintsValuelbl = new System.Windows.Forms.Label();
+            this.MaxWeightValueLbl = new System.Windows.Forms.Label();
+            this.MaxWeightLbl = new System.Windows.Forms.Label();
+            this.MinWeightValueLbl = new System.Windows.Forms.Label();
+            this.MinWeightLbl = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.fitnessChart)).BeginInit();
             this.SuspendLayout();
             // 
@@ -253,11 +259,71 @@
             this.TestButton2.UseVisualStyleBackColor = true;
             this.TestButton2.Click += new System.EventHandler(this.TestButton2_Click);
             // 
+            // NrOfConstraintsLbl
+            // 
+            this.NrOfConstraintsLbl.AutoSize = true;
+            this.NrOfConstraintsLbl.Location = new System.Drawing.Point(13, 84);
+            this.NrOfConstraintsLbl.Name = "NrOfConstraintsLbl";
+            this.NrOfConstraintsLbl.Size = new System.Drawing.Size(84, 13);
+            this.NrOfConstraintsLbl.TabIndex = 19;
+            this.NrOfConstraintsLbl.Text = "Nr of constraints";
+            // 
+            // NrOfConstraintsValuelbl
+            // 
+            this.NrOfConstraintsValuelbl.AutoSize = true;
+            this.NrOfConstraintsValuelbl.Location = new System.Drawing.Point(121, 84);
+            this.NrOfConstraintsValuelbl.Name = "NrOfConstraintsValuelbl";
+            this.NrOfConstraintsValuelbl.Size = new System.Drawing.Size(110, 13);
+            this.NrOfConstraintsValuelbl.TabIndex = 20;
+            this.NrOfConstraintsValuelbl.Text = "Number of constraints";
+            // 
+            // MaxWeightValueLbl
+            // 
+            this.MaxWeightValueLbl.AutoSize = true;
+            this.MaxWeightValueLbl.Location = new System.Drawing.Point(121, 120);
+            this.MaxWeightValueLbl.Name = "MaxWeightValueLbl";
+            this.MaxWeightValueLbl.Size = new System.Drawing.Size(64, 13);
+            this.MaxWeightValueLbl.TabIndex = 22;
+            this.MaxWeightValueLbl.Text = "Max Weight";
+            // 
+            // MaxWeightLbl
+            // 
+            this.MaxWeightLbl.AutoSize = true;
+            this.MaxWeightLbl.Location = new System.Drawing.Point(13, 120);
+            this.MaxWeightLbl.Name = "MaxWeightLbl";
+            this.MaxWeightLbl.Size = new System.Drawing.Size(61, 13);
+            this.MaxWeightLbl.TabIndex = 21;
+            this.MaxWeightLbl.Text = "Max weight";
+            // 
+            // MinWeightValueLbl
+            // 
+            this.MinWeightValueLbl.AutoSize = true;
+            this.MinWeightValueLbl.Location = new System.Drawing.Point(121, 145);
+            this.MinWeightValueLbl.Name = "MinWeightValueLbl";
+            this.MinWeightValueLbl.Size = new System.Drawing.Size(64, 13);
+            this.MinWeightValueLbl.TabIndex = 24;
+            this.MinWeightValueLbl.Text = "Max Weight";
+            // 
+            // MinWeightLbl
+            // 
+            this.MinWeightLbl.AutoSize = true;
+            this.MinWeightLbl.Location = new System.Drawing.Point(13, 145);
+            this.MinWeightLbl.Name = "MinWeightLbl";
+            this.MinWeightLbl.Size = new System.Drawing.Size(58, 13);
+            this.MinWeightLbl.TabIndex = 23;
+            this.MinWeightLbl.Text = "Min weight";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(939, 738);
+            this.Controls.Add(this.MinWeightValueLbl);
+            this.Controls.Add(this.MinWeightLbl);
+            this.Controls.Add(this.MaxWeightValueLbl);
+            this.Controls.Add(this.MaxWeightLbl);
+            this.Controls.Add(this.NrOfConstraintsValuelbl);
+            this.Controls.Add(this.NrOfConstraintsLbl);
             this.Controls.Add(this.TestButton2);
             this.Controls.Add(this.AverageValueLbl);
             this.Controls.Add(this.AverageLbl);
@@ -307,6 +373,12 @@
         private System.Windows.Forms.Label AverageValueLbl;
         private System.Windows.Forms.Label AverageLbl;
         private System.Windows.Forms.Button TestButton2;
+        private System.Windows.Forms.Label NrOfConstraintsLbl;
+        private System.Windows.Forms.Label NrOfConstraintsValuelbl;
+        private System.Windows.Forms.Label MaxWeightValueLbl;
+        private System.Windows.Forms.Label MaxWeightLbl;
+        private System.Windows.Forms.Label MinWeightValueLbl;
+        private System.Windows.Forms.Label MinWeightLbl;
     }
 }
 

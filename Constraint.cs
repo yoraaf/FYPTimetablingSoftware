@@ -16,7 +16,8 @@ namespace FYPTimetablingSoftware {
         public static BitArray AllFalse = new BitArray(7, false);
         public float BestScore { get; set; } //the score achieved by the best dna
 
-        public static Dictionary<string, int> ConstraintCounts = new Dictionary<string, int>() { { "BTB", 0 }, { "BTB_TIME", 0 }, { "CAN_SHARE_ROOM", 0 }, { "DIFF_TIME", 0 }, { "MEET_WITH", 0 }, { "NHB(1.5)", 0 }, { "NHB_GTE(1)", 0 }, { "SAME_DAYS", 0 }, { "SAME_INSTR", 0 }, { "SAME_ROOM", 0 }, { "SAME_START", 0 }, { "SAME_TIME", 0 }, { "SAME_STUDENTS", 0 }, { "SPREAD", 0 }};
+        public static Dictionary<string, int> ConstraintCounts = new Dictionary<string, int>() { { "BTB", 0 }, { "BTB_TIME", 0 }, { "CAN_SHARE_ROOM", 0 }, { "DIFF_TIME", 0 }, { "MEET_WITH", 0 }, { "NHB(1.5)", 0 }, { "NHB_GTE(1)", 0 }, { "SAME_DAYS", 0 }, { "SAME_INSTR", 0 }, { "SAME_ROOM", 0 }, { "SAME_START", 0 }, { "SAME_TIME", 0 }, { "SAME_STUDENTS", 0 }, { "SPREAD", 0 }, { "ROOM_CONFLICTS", 0 } };
+        public static float RoomConflictWeight = 20;
 
         public Constraint(int id, string type, float pref, bool isHardConstraint, int[] classIDs) {
             ID = id;
@@ -66,6 +67,9 @@ namespace FYPTimetablingSoftware {
                 ConstraintCounts[type] = ConstraintCounts[type] + 1;
             } else if(type == "SPREAD") {
                 FitnessFunction = SPREAD;
+                ConstraintCounts[type] = ConstraintCounts[type] + 1;
+            } else if(type == "ROOM_CONFLICTS") {
+                FitnessFunction = ROOM_CONFLICTS;
                 ConstraintCounts[type] = ConstraintCounts[type] + 1;
             }
         }
@@ -443,6 +447,60 @@ namespace FYPTimetablingSoftware {
             } else {
                 return IsHardConstraint ? Pref : 0; //violated therefore penalty (unless p then this is a good thing)
             }
+        }
+        private float ROOM_CONFLICTS(List<SolutionGene> cGenes) {
+            //most of this is copy pasted and doesn't work
+            int roomConflicts = 0;
+            SolutionGene[] genesArr = cGenes.ToArray(); //this is mostly for debugging to save the original array
+            Dictionary<SolutionGene, List<SolutionGene>> conflictingGenes = new Dictionary<SolutionGene, List<SolutionGene>>();
+
+            for (int i = 0; i < cGenes.Count; i++) {
+                var c1 = cGenes[i];
+                cGenes.RemoveAt(i);
+                for (int j = 0; j < cGenes.Count; j++) {
+                    var c2 = cGenes[j];
+                    if (c1.ID != c2.ID) {
+                        var c1Start = c1.SolutionTime.Start;
+                        var c2Start = c2.SolutionTime.Start;
+                        var c1End = c1Start + c1.SolutionTime.Length;
+                        var c2End = c2Start + c2.SolutionTime.Length;
+                        if((c1Start<=c2Start && c1End>=c2End) || (c2Start<=c1Start && c2End >= c1End)) {
+                            //The above checks if they are taught at or within the same time
+                            if (c1.SolutionRoom.ID == c2.SolutionRoom.ID) {
+                                //Check if they're in the same room
+                                var sameDay = false;
+                                foreach(bool b1 in c1.SolutionTime.Days) {
+                                    foreach(bool b2 in c2.SolutionTime.Days) {
+                                        if(b1 && b2) {
+                                            //Check if they have any days in common, if yes break both loops
+                                            sameDay = true;
+                                            break;
+                                        }
+                                    }
+                                    if (sameDay) { break; }
+                                }
+                                if (sameDay) {
+                                    //if all if statements have passed true, and they share a day,
+                                    //increase the conflict counter and add to the conflict list for debugging
+                                    roomConflicts++;
+                                    if (conflictingGenes.ContainsKey(c1)) {
+                                        conflictingGenes[c1].Add(c2);
+                                    } else {
+                                        conflictingGenes.Add(c1, new List<SolutionGene>() { c2 });
+                                    }
+                                    
+                                }
+                            }
+                        }
+
+                        
+                    }
+                }
+            }
+
+            float score = RoomConflictWeight*roomConflicts;
+            return score;
+            
         }
 
         private float CAN_SHARE_ROOM(List<SolutionGene> cGenes) {
