@@ -53,6 +53,7 @@ namespace FYPTimetablingSoftware {
             ID = id;
             SolutionTime = solutionTime;
             SolutionRoom = solutionRoom;
+            Violations = 0;
         }
         public override string ToString() {
             return "SolutionGene: "+ID+" <" + SolutionRoom+"> <"+ SolutionTime + ">";

@@ -49,7 +49,7 @@ namespace FYPTimetablingSoftware {
         private String startTimeString;
         private string workingDirectory;
         private string projectDirectory;
-        private GeneticAlgorithm<SolutionGene> ga;
+        private GeneticAlgorithm ga;
         private System.Random random;
         public Form1() {
             workingDirectory = Environment.CurrentDirectory;
@@ -84,12 +84,12 @@ namespace FYPTimetablingSoftware {
             //aTimer.Enabled = enabled;
 
             random = new System.Random();
-            ga = new GeneticAlgorithm<SolutionGene>(populationSize, XMLParser.GetKlasList().Length, random, GetRandomSolutionGene, FitnessFunction, UpdateAlgorithm, elitism, mutationRate);
+            ga = new GeneticAlgorithm(populationSize, XMLParser.GetKlasList().Length, random, GetRandomSolutionGene, FitnessFunction, UpdateAlgorithm, elitism, mutationRate);
         }
 
         private SolutionGene GetRandomSolutionGene(Klas k) {
-            Room a = (k.Rooms.Length>0) ? k.Rooms[GeneticAlgorithm<SolutionGene>.LockedRandomInt(0, k.Rooms.Length)] : null;
-            KlasTime b = (k.Times.Length>0) ? k.Times[GeneticAlgorithm<SolutionGene>.LockedRandomInt(0, k.Times.Length)] : null;
+            Room a = (k.Rooms.Length>0) ? k.Rooms[GeneticAlgorithm.LockedRandomInt(0, k.Rooms.Length)] : null;
+            KlasTime b = (k.Times.Length>0) ? k.Times[GeneticAlgorithm.LockedRandomInt(0, k.Times.Length)] : null;
             SolutionGene output = new SolutionGene(k.ID, a, b);
             return output;
         }
@@ -159,7 +159,7 @@ namespace FYPTimetablingSoftware {
 
         private float FitnessFunction(int index) { //calculate fitness of 1 member of the population (DNA)
             float score = 0;
-            DNA<SolutionGene> dna = ga.Population[index];
+            DNA dna = ga.Population[index];
 
             foreach (var key in dna.ConstraintViolations.Keys.ToList()) {
                 dna.ConstraintViolations[key] = 0;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -133,6 +134,7 @@ namespace FYPTimetablingSoftware {
                                 }
                                 violation = true;
                                 adhered--;
+                                c1.Violations++; //mark that this gene caused a violation 
                                 //result = 0;
                             }
                         }
@@ -172,6 +174,7 @@ namespace FYPTimetablingSoftware {
                                 //This checks if its whithin the times and if there's already been a violation
                                 violation = true;
                                 adhered--;
+                                c1.Violations++; //mark that this gene caused a violation 
                                 //result = 0;
                             }
                         }
@@ -197,47 +200,64 @@ namespace FYPTimetablingSoftware {
         /// <returns>float of the fitness</returns>
         public float SAME_STUDENTS(List<SolutionGene> cGenes) {
             float result = 0;
-            for (int i = cGenes.Count - 1; i >= 0; i--) {
-                SolutionGene c1 = cGenes[i];
+            int geneCount = cGenes.Count;
+            int studentConflicts = 0;
+            for(int i = geneCount-1; i >= 0; i--) {
+                var c1 = cGenes[i];
                 cGenes.RemoveAt(i);
-                int minTime = c1.SolutionTime.Start;
-                int maxTime = minTime + c1.SolutionTime.Length;
-                for (int j = 0; j < cGenes.Count; j++) { //currently this is checkinng some combinations of times twice, could be optimized 
-                    SolutionGene c2 = cGenes[j];
-                    if (i != j) { //make sure you're not comparing the same Klas to itself 
-                        BitArray andResult = (BitArray)c1.SolutionTime.Days.Clone();
-                        andResult.And(c2.SolutionTime.Days);
-                        if (andResult != AllFalse) { //this means that at least one day overlaps, so we must check if times overlap
-                            if (c2.SolutionTime.Start >= minTime && c2.SolutionTime.Start <= maxTime) {
-                                //This checks if its whithin the times 
-                                result = Pref; //this means the constraint has been violated. 
-                            } else if (c2.SolutionTime.Start == maxTime ) { //back-to-back
+                for (int j = 0; j < cGenes.Count; j++) {
+                    var c2 = cGenes[j];
+                    if (c1.ID != c2.ID) {
+                        var c1Start = c1.SolutionTime.Start;
+                        var c2Start = c2.SolutionTime.Start;
+                        var c1End = c1Start + c1.SolutionTime.Length;
+                        var c2End = c2Start + c2.SolutionTime.Length;
+                        var sameDay = false;
+                        foreach (bool b1 in c1.SolutionTime.Days) {
+                            foreach (bool b2 in c2.SolutionTime.Days) {
+                                if (b1 && b2) {
+                                    //Check if they have any days in common, if yes break both loops
+                                    sameDay = true;
+                                    break;
+                                }
+                            }
+                            if (sameDay) { break; }
+                        }
+                        if (sameDay) {
+                            if ((c1Start <= c2Start && c1End >= c2End) || (c2Start <= c1Start && c2End >= c1End)) {
+                                studentConflicts++;
+                                c1.Violations++;
+                            } else if (c1Start == c2End || c2Start == c1End) { //back-to-back
                                 int distance = c1.SolutionRoom.CalculateRoomDistance(c2.SolutionRoom);
-                                if(c1.SolutionTime.Length >= 18 && distance > 1000) {
+                                if (c1.SolutionTime.Length >= 18 && distance > 1000) {
                                     //if its a long lesson, the limit is 1000
-                                    result = Pref;
+                                    studentConflicts++;
+                                    c1.Violations++;
                                 } else if (distance > 670) {
                                     //otherwise, the limit is 670
-                                    result = Pref;
+                                    studentConflicts++;
+                                    c1.Violations++;
                                 }
-
                             }
+
                         }
+                        
                     }
                 }
-
             }
 
-            return result;
+            return (studentConflicts > 0) ? Pref : 0; //if there was any conflicts, return pref (cz its always R), otherwise return 0
         }
 
         private float SAME_ROOM(List<SolutionGene> cGenes) {
             int numberOfRoomsShared = 0;
             int nrOfGenes = cGenes.Count;
-            SolutionGene[] genesArr = cGenes.ToArray();
-            for(int i = 0;i<cGenes.Count;i++) {
+            //SolutionGene[] genesArr = cGenes.ToArray();
+            //String printString = "=============\r\n Count: " + nrOfGenes+"\r\n";
+            for(int i = cGenes.Count-1; i>=0; i--) {
                 var c1 = cGenes[i];
                 cGenes.RemoveAt(i);
+                //printString += "[" + i + "] " + c1.ID+"\r\n";
                 for (int j = 0;j<cGenes.Count;j++) {
                     var c2 = cGenes[j];
                     if (c1.ID != c2.ID) {
@@ -247,6 +267,8 @@ namespace FYPTimetablingSoftware {
                     }
                 }
             }
+            //printString += "=============";
+            //Debug.WriteLine(printString);
             if (IsHardConstraint) {
                 if (numberOfRoomsShared == nrOfGenes - 1) {
                     //if all rooms are shared, that's good
@@ -333,7 +355,7 @@ namespace FYPTimetablingSoftware {
         private float SAME_START(List<SolutionGene> cGenes) {
             int numberSameStart = 0;
             SolutionGene[] genesArr = cGenes.ToArray();
-            for (int i = 0; i < cGenes.Count; i++) {
+            for (int i = cGenes.Count-1; i > 0; i--) {
                 var t1 = cGenes[i].SolutionTime;
                 cGenes.RemoveAt(i);
                 for (int j = 0; j < cGenes.Count; j++) {
@@ -365,7 +387,7 @@ namespace FYPTimetablingSoftware {
                 }
             });
 
-            for (int i = 0; i < cGenes.Count; i++) {
+            for (int i = cGenes.Count - 1; i > 0; i--) {
                 var d1 = cGenes[i].SolutionTime.Days;
                 daysArray[i] = d1;
                 cGenes.RemoveAt(i);
@@ -472,7 +494,7 @@ namespace FYPTimetablingSoftware {
             Dictionary<SolutionGene, List<SolutionGene>> conflictingGenes = new Dictionary<SolutionGene, List<SolutionGene>>();
             var KlasList = XMLParser.GetKlasList();
 
-            for (int i = 0; i < cGenes.Count; i++) {
+            for (int i = cGenes.Count - 1; i > 0; i--) {
                 var c1 = cGenes[i];
                 cGenes.RemoveAt(i);
                 for (int j = 0; j < cGenes.Count; j++) {
@@ -492,15 +514,14 @@ namespace FYPTimetablingSoftware {
                             if (c1.SolutionRoom.ID == c2.SolutionRoom.ID) {
                                 //Check if they're in the same room
                                 var sameDay = false;
-                                foreach(bool b1 in c1.SolutionTime.Days) {
-                                    foreach(bool b2 in c2.SolutionTime.Days) {
-                                        if(b1 && b2) {
-                                            //Check if they have any days in common, if yes break both loops
-                                            sameDay = true;
-                                            break;
-                                        }
+                                for(int k = 0; k<c1.SolutionTime.Days.Count;k++) {
+                                    var b1 = c1.SolutionTime.Days[k];
+                                    var b2 = c2.SolutionTime.Days[k];
+                                    if (b1 && b2) {
+                                        //Check if they have any days in common, if yes break both loops
+                                        sameDay = true;
+                                        break;
                                     }
-                                    if (sameDay) { break; }
                                 }
                                 if (sameDay) {
                                     //if all if statements have passed true, and they share a day,

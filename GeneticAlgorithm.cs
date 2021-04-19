@@ -5,54 +5,54 @@ using System.Linq;
 using System.Threading;
 
 namespace FYPTimetablingSoftware {
-	public class GeneticAlgorithm<T> {
-		public List<DNA<T>> Population { get; private set; } // T is SolutionGene
+	public class GeneticAlgorithm {
+		public List<DNA> Population { get; private set; } // T is SolutionGene
 		public int Generation { get; private set; }
 		public float BestFitness { get; private set; }
-		public T[] BestGenes { get; private set; }
-		public DNA<T> BestDNA { get; private set; }
+		public SolutionGene[] BestGenes { get; private set; }
+		public DNA BestDNA { get; private set; }
 
 		public int Elitism;
 		public float MutationRate;
 		public static object randLock = new object();
 		public static object fitLock = new object();
-		private List<DNA<T>> newPopulation;
+		private List<DNA> newPopulation;
 		private static Random random;
 		private float fitnessSum;
 		private int dnaSize;
-		private Func<Klas, T> getRandomGene;
+		private Func<Klas, SolutionGene> getRandomGene;
 		private Func<int, float> fitnessFunction;
 		private Action updateAlgorithm;
 		private readonly Klas[] KlasArr;
-		private DNA<T>[] NewGenerationArr;
+		private DNA[] NewGenerationArr;
 		private int threadPoolCounter = 0;
 		public static ManualResetEvent DoneEvt;
 
-		public GeneticAlgorithm(int populationSize, int dnaSize, Random random, Func<Klas, T> getRandomGene, Func<int, float> fitnessFunction, Action updateAlgorithm,
+		public GeneticAlgorithm(int populationSize, int dnaSize, Random random, Func<Klas, SolutionGene> getRandomGene, Func<int, float> fitnessFunction, Action updateAlgorithm,
 			int elitism, float mutationRate = 0.01f) {
 			Generation = 1;
 			Elitism = elitism;
 			MutationRate = mutationRate;
-			Population = new List<DNA<T>>(populationSize);
-			newPopulation = new List<DNA<T>>(populationSize);
-			GeneticAlgorithm<T>.random = random;
+			Population = new List<DNA>(populationSize);
+			newPopulation = new List<DNA>(populationSize);
+			GeneticAlgorithm.random = random;
 			this.dnaSize = dnaSize;
 			this.getRandomGene = getRandomGene;
 			this.fitnessFunction = fitnessFunction;
 			this.updateAlgorithm = updateAlgorithm;
-			BestGenes = new T[dnaSize];
-			NewGenerationArr = new DNA<T>[populationSize];
+			BestGenes = new SolutionGene[dnaSize];
+			NewGenerationArr = new DNA[populationSize];
 			KlasArr = XMLParser.GetKlasList(); //The parser must be ran before the algorithm starts
 
 			//When the genetic algorithm is created the initial population is generated as follows:
 			for (int i = 0; i < populationSize; i++) {
-				Population.Add(new DNA<T>(i, dnaSize, random, getRandomGene, fitnessFunction, shouldInitGenes: true));
+				Population.Add(new DNA(i, dnaSize, random, getRandomGene, fitnessFunction, shouldInitGenes: true));
 			}
 			Console.ForegroundColor = ConsoleColor.Green;
 			Console.WriteLine("-------------------------------------");
 			Console.ResetColor();
 		}
-		public static string ArrayToString(T[] arr) {
+		public static string ArrayToString(SolutionGene[] arr) {
 			string output = "";
 			for(int i = 0; i < arr.Length; i++) {
 				output += arr[i].ToString() +"\r\n";
@@ -78,10 +78,10 @@ namespace FYPTimetablingSoftware {
 				if (i < Elitism && i < Population.Count/2) { //elitism makes it so that the top (5) make it into the next generation 
 					NewGenerationArr[i] = Population[i];
 				} else if (i < Population.Count) {
-					DNA<T> parent1 = ChooseParent();
-					DNA<T> parent2 = ChooseParent();
+					DNA parent1 = ChooseParent();
+					DNA parent2 = ChooseParent();
 
-					DNA<T> child = parent1.Crossover(parent2, i);
+					DNA child = parent1.Crossover(parent2, i);
 
 					child.Mutate(MutationRate);
 					NewGenerationArr[i] = child;
@@ -100,10 +100,10 @@ namespace FYPTimetablingSoftware {
 				if (j < Elitism && j < Population.Count) { //elitism makes it so that the top (5) make it into the next generation 
 					NewGenerationArr[j] = Population[j];
 				} else if (j < Population.Count) {
-					DNA<T> parent1 = ChooseParent();
-					DNA<T> parent2 = ChooseParent();
+					DNA parent1 = ChooseParent();
+					DNA parent2 = ChooseParent();
 
-					DNA<T> child = parent1.Crossover(parent2, j);
+					DNA child = parent1.Crossover(parent2, j);
 
 					child.Mutate(MutationRate);
 					NewGenerationArr[j] = child;
@@ -112,7 +112,7 @@ namespace FYPTimetablingSoftware {
 			Debug.WriteLine("second thread done");
 		}
 
-		private int CompareDNA(DNA<T> a, DNA<T> b) {
+		private int CompareDNA(DNA a, DNA b) {
 			//had to switch the >< around cz low = better
 			if (a.Fitness < b.Fitness) {
 				return -1;
@@ -181,13 +181,13 @@ namespace FYPTimetablingSoftware {
 			return output;
         }
 
-		private DNA<T> ChooseParent() {
+		private DNA ChooseParent() {
 			//tournament style selection
 			double randomNumber = GetFitnessSum() * LockedRandomDouble();
 			int tournamentSize =  (Int32)Math.Floor(Population.Count * 0.2);
-			DNA<T>[] tournamentMembers = new DNA<T>[tournamentSize];
+			DNA[] tournamentMembers = new DNA[tournamentSize];
 			for (int i = 0; i < tournamentSize; i++) {
-				DNA<T> x;
+				DNA x;
 				int testCounter = 0;
 				List<int> logIDList = new List<int>();
 				do {
@@ -219,7 +219,7 @@ namespace FYPTimetablingSoftware {
             }
         }
 
-		private DNA<T> ChooseParent_old() {
+		private DNA ChooseParent_old() {
 			double r = random.NextDouble();
 			double randomNumber = r * fitnessSum * 0.9;
 			double[] fitnessArr = new double[Population.Count];
