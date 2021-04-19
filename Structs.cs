@@ -1,5 +1,7 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace FYPTimetablingSoftware {
 
@@ -46,6 +48,7 @@ namespace FYPTimetablingSoftware {
         public KlasTime SolutionTime { get; set; }
         public Room SolutionRoom { get; set; }
         public int ID { get; set; }
+        public int Violations { get; set; }
         public SolutionGene(int id, Room solutionRoom, KlasTime solutionTime) {
             ID = id;
             SolutionTime = solutionTime;
@@ -53,6 +56,51 @@ namespace FYPTimetablingSoftware {
         }
         public override string ToString() {
             return "SolutionGene: "+ID+" <" + SolutionRoom+"> <"+ SolutionTime + ">";
+        }
+    }
+
+    public class CsvData {
+        public int Generation { get; private set; }
+        public float Fitness { get; private set; }
+        public int TimeTaken { get; private set; }
+        public int BTB { get; private set; }
+        public int BTB_TIME { get; private set; }
+        public int CAN_SHARE_ROOM { get; private set; }
+        public int DIFF_TIME { get; private set; }
+        public int MEET_WITH { get; private set; }
+        public int NHB { get; private set; }
+        public int NHB_GTE { get; private set; }
+        public int SAME_DAYS { get; private set; }
+        public int SAME_INSTR { get; private set; }
+        public int SAME_ROOM { get; private set; }
+        public int SAME_START { get; private set; }
+        public int SAME_TIME { get; private set; }
+        public int SAME_STUDENTS { get; private set; }
+        public int SPREAD { get; private set; }
+        public int ROOM_CONFLICTS { get; private set; }
+        public Dictionary<string, int> ConstraintViolations { get; private set; }
+
+        public CsvData(int gen, float fit, Dictionary<string, int> violations, int timeTaken) {
+            Generation = gen;
+            Fitness = fit;
+            ConstraintViolations = violations;
+            TimeTaken = timeTaken;
+
+            var thisType = typeof(CsvData);
+            foreach(var entry in violations) {
+                if (entry.Key == "NHB(1.5)") {
+                    PropertyInfo propInfo = thisType.GetProperty("NHB");
+                    propInfo.SetValue(this, entry.Value);
+                } else if (entry.Key == "NHB_GTE(1)") {
+                    PropertyInfo propInfo = thisType.GetProperty("NHB_GTE");
+                    propInfo.SetValue(this, entry.Value);
+                } else if (entry.Key == "CAN_SHARE_ROOM") {
+                    //this one does nothing 
+                } else {
+                    PropertyInfo propInfo = thisType.GetProperty(entry.Key);
+                    propInfo.SetValue(this, entry.Value);
+                }
+            }
         }
     }
 

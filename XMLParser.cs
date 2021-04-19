@@ -155,6 +155,11 @@ namespace FYPTimetablingSoftware {
                 } else {
                     Console.WriteLine(">>Something went wrong. Constraint should have child nodes");
                 }
+                if(cType == "CAN_SHARE_ROOM") {
+                    for(int j = 0; j < cClassIDs.Length; j++) {
+                        KlasList[cClassIDs[j]-1].Can_Share_Room = cClassIDs;
+                    }
+                }
                 //check if soft or hard constraint 
                 if (float.TryParse(cPref, out float pref)) {
                     //Soft

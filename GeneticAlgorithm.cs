@@ -129,10 +129,7 @@ namespace FYPTimetablingSoftware {
 			threadPoolCounter = Population.Count;
 			DoneEvt = new ManualResetEvent(false);
 
-			/*Thread t = new Thread(new ThreadStart(fitnessThread));
-			t.Name = "FitnessThread1";
-			t.Start();*/
-			ThreadPool.SetMaxThreads(25, 25);
+			//ThreadPool.SetMaxThreads(25, 25); This limit doesn't seem to actually do anything 
 
 			for (int i = 0; i < Population.Count; i++) {
 				ThreadPool.QueueUserWorkItem(FitnessThreadPoolMethod, i);
@@ -140,7 +137,7 @@ namespace FYPTimetablingSoftware {
 			Debug.WriteLine("Added all events");
 			//t.Join();
 			DoneEvt.WaitOne();
-			Debug.WriteLine("done waiting");
+			//Debug.WriteLine("done waiting");
 
 			BestFitness = BestDNA.Fitness;
 			BestDNA.Genes.CopyTo(BestGenes, 0);
@@ -150,7 +147,7 @@ namespace FYPTimetablingSoftware {
 		private void FitnessThreadPoolMethod(object number) {
 			int n = (int)number;
 			var fit = Population[n].CalculateFitness(n);
-			Debug.WriteLine("[" + n + "] Fitness: " + fit);
+			//Debug.WriteLine("[" + n + "] Fitness: " + fit);
 			lock (fitLock) {
 				fitnessSum += fit;
 				if (Population[n].Fitness < BestDNA.Fitness) {

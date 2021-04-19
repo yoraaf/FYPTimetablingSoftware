@@ -45,6 +45,30 @@ namespace FYPTimetablingSoftware {
 			return child;
 		}
 
+		/*
+		public DNA<T> CrossoverViolation(DNA<T> otherParent, int id) {
+			DNA<T> child = new DNA<T>(id, Genes.Length, random, getRandomGene, fitnessFunction, shouldInitGenes: false);
+
+			for (int i = 0; i < Genes.Length; i++) {
+				int totalV = Genes[i].Violations + otherParent.Genes[i].Violations;
+				int randomInt = GeneticAlgorithm<T>.LockedRandomInt(0,totalV);
+				if (Genes[i].Violations < otherParent.Genes[i].Violations) {
+					if (randomInt <= Genes[i].Violations) {
+						child.Genes[i] = Genes[i];
+					} else {
+						child.Genes[i] = otherParent.Genes[i];
+					}
+				} else {
+					if (randomInt <= otherParent.Genes[i].Violations) {
+						child.Genes[i] = otherParent.Genes[i];
+					} else {
+						child.Genes[i] = Genes[i];
+					}
+				}
+			}
+			return child;
+		}*/
+
 		public void Mutate(float mutationRate) {
 			for (int i = 0; i < Genes.Length; i++) {
 				if (LockedRandomDouble() < mutationRate) {

@@ -14,6 +14,7 @@ using System.Windows.Forms.DataVisualization.Charting;
 using System.IO;
 using System.Diagnostics;
 using System.Globalization;
+using CsvHelper;
 
 namespace FYPTimetablingSoftware {
     public partial class Form1 : Form {
@@ -45,10 +46,14 @@ namespace FYPTimetablingSoftware {
         public static float MinViolationWeight;
 
         private bool LoopRunning = true;
-
+        private String startTimeString;
+        private string workingDirectory;
+        private string projectDirectory;
         private GeneticAlgorithm<SolutionGene> ga;
         private System.Random random;
         public Form1() {
+            workingDirectory = Environment.CurrentDirectory;
+            projectDirectory = Directory.GetParent(workingDirectory).Parent.FullName;
             SyncContext = SynchronizationContext.Current;
             GUIDispatcher = Dispatcher.CurrentDispatcher;
             InitializeComponent();
@@ -56,9 +61,16 @@ namespace FYPTimetablingSoftware {
             //initAlgorithm();
         }
         private void initAlgorithm() {
+           
             StartTime = DateTime.Now;
             var culture = new CultureInfo("en-GB");
             StartTimeValueLbl.Text = StartTime.ToString(culture);
+            
+            startTimeString = StartTime.ToString(culture);
+            startTimeString = startTimeString.Replace('/', '-');
+            startTimeString = startTimeString.Replace(' ', '_');
+            startTimeString = startTimeString.Replace(':', '-');
+            Debug.WriteLine(startTimeString);
             stopwatch.Start();
             //StartTimeValueLbl
             if (string.IsNullOrEmpty(targetString)) {
@@ -82,14 +94,14 @@ namespace FYPTimetablingSoftware {
             return output;
         }
 
-        private Klas GetRandomKlasGene(Klas k) {
+        /*private Klas GetRandomKlasGene(Klas k) {
             int a = random.Next(0, k.Rooms.Length);
             int b = random.Next(0, k.Times.Length);
             k.SolutionRoom = k.Rooms[a];
             k.SolutionTime = k.Times[b];
             Console.WriteLine("kID: " + k.ID + " \tb: " + b +" \t<"+ k.SolutionTime+">");
             return k;
-        }
+        }*/
 
         private void OnTimedEvent(Object source, ElapsedEventArgs e) {
             if (!aRunning) { //check if the previous call is still running 
@@ -117,12 +129,15 @@ namespace FYPTimetablingSoftware {
             } catch (Exception e){
                 Console.WriteLine("{0} Exception caught.", e);
             }
-            
-            if (ga.Generation == 100 || ga.BestFitness == 1) { 
+
+            if(ga.Generation == 25) {
+                AverageTimePerGen = stopwatch.ElapsedMilliseconds / 25;
+            }
+
+            if (ga.Generation == 100) { 
                 enabled = false;
                 LoopRunning = false;
-                AverageTimePerGen = stopwatch.ElapsedMilliseconds/100;
-                
+
                 Console.WriteLine("------------------------------------------------------------------------------");
                 Console.WriteLine("Reached generation 100");
                 Console.WriteLine("------------------------------------------------------------------------------");
@@ -205,25 +220,27 @@ namespace FYPTimetablingSoftware {
             return ga.Population[j].Genes;
         }
 
+        private long LastTimeTaken = 0;
+        private List<CsvData> CsvRecords = new List<CsvData>();
+
         private void UpdateText(SolutionGene[] bestGenes, float bestFitness, int generation, int populationSize) {
             float improvement = (bestFitness - oldFitness)*-1;
-            /*string aaa = "";
-            for(int i = 0; i < 50; i++) {
-                aaa += constraintResultsArr[i];
-            }*/
+            int timeTaken = (int)(stopwatch.ElapsedMilliseconds - LastTimeTaken);
+            LastTimeTaken = stopwatch.ElapsedMilliseconds;
+
+            CsvData dataObject = new CsvData(ga.Generation, ga.BestDNA.Fitness, ga.BestDNA.ConstraintViolations, timeTaken);
+            CsvRecords.Add(dataObject);
+            using (var writer = new StreamWriter(projectDirectory+"\\output\\" + startTimeString + ".csv")) 
+            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture)) {
+                csv.WriteRecords(CsvRecords);
+            }
             string constraintViolations = "";
             foreach(var entry in ga.BestDNA.ConstraintViolations) {
                 constraintViolations += entry.Key + ": " + entry.Value + "\r\n";
             }
-            //AllMembersBox.Text = ga.BestDNA.ConstraintResult;
+
             AllMembersBox.Text = constraintViolations+"Total Violations: "+ga.BestDNA.TotalViolations;
             if (improvement > 0.0001) {
-                /*string constraintResults = "";
-                for (int i = 0; i < SoftConstraints.Length; i++) {
-                    float fitness = SoftConstraints[i].GetFitness(bestGenes);
-                    constraintResults += SoftConstraints[i].Type + "\t"+fitness+"\r\n";
-                }*/
-                
                 fitnessSeries.Points.AddXY(generation, bestFitness*-1);
                 graphDataTextBox.AppendText(generation+"\t ; \t"+bestFitness + "\r\n");
                 oldFitness = bestFitness;
@@ -235,7 +252,7 @@ namespace FYPTimetablingSoftware {
             //bestGeneBox.Text = CharArrayToString(bestGenes);
             fitnessLbl.Text = bestFitness.ToString();
             generationLbl.Text = generation.ToString();
-            if(ga.Generation == 101) {
+            if(ga.Generation == 26) {
                 AverageValueLbl.Text = AverageTimePerGen + "ms";
             }
         }
@@ -298,8 +315,8 @@ namespace FYPTimetablingSoftware {
         }
 
         private void XMLTestButton_Click(object sender, EventArgs e) {
-            string workingDirectory = Environment.CurrentDirectory;
-            string projectDirectory = Directory.GetParent(workingDirectory).Parent.FullName;
+            //string workingDirectory = Environment.CurrentDirectory;
+            //string projectDirectory = Directory.GetParent(workingDirectory).Parent.FullName;
             XMLParser p = new XMLParser(projectDirectory+ "/DataSet/pu-fal07-llr_FYP_fix.xml");
             // /DataSet/pu-fal07-llr_FYP_fix.xml
             // SmallTest01.xml

@@ -17,7 +17,24 @@ namespace FYPTimetablingSoftware {
         public float BestScore { get; set; } //the score achieved by the best dna
 
         public static Dictionary<string, int> ConstraintCounts = new Dictionary<string, int>() { { "BTB", 0 }, { "BTB_TIME", 0 }, { "CAN_SHARE_ROOM", 0 }, { "DIFF_TIME", 0 }, { "MEET_WITH", 0 }, { "NHB(1.5)", 0 }, { "NHB_GTE(1)", 0 }, { "SAME_DAYS", 0 }, { "SAME_INSTR", 0 }, { "SAME_ROOM", 0 }, { "SAME_START", 0 }, { "SAME_TIME", 0 }, { "SAME_STUDENTS", 0 }, { "SPREAD", 0 }, { "ROOM_CONFLICTS", 0 } };
-        public static float RoomConflictWeight = 20;
+        public static Dictionary<string, int> ConstraintWeights = new Dictionary<string, int>() { 
+            { "BTB", 0 }, 
+            { "BTB_TIME", 0 }, 
+            { "CAN_SHARE_ROOM", 0 }, 
+            { "DIFF_TIME", 0 }, 
+            { "MEET_WITH", 0 }, 
+            { "NHB(1.5)", 0 }, 
+            { "NHB_GTE(1)", 0 }, 
+            { "SAME_DAYS", 0 }, 
+            { "SAME_INSTR", 0 }, 
+            { "SAME_ROOM", 0 }, 
+            { "SAME_START", 0 }, 
+            { "SAME_TIME", 0 }, 
+            { "SAME_STUDENTS", 0 }, 
+            { "SPREAD", 0 }, 
+            { "ROOM_CONFLICTS", 0 } 
+        };
+        public static float RoomConflictWeight = 100000;
 
         public Constraint(int id, string type, float pref, bool isHardConstraint, int[] classIDs) {
             ID = id;
@@ -453,12 +470,18 @@ namespace FYPTimetablingSoftware {
             int roomConflicts = 0;
             SolutionGene[] genesArr = cGenes.ToArray(); //this is mostly for debugging to save the original array
             Dictionary<SolutionGene, List<SolutionGene>> conflictingGenes = new Dictionary<SolutionGene, List<SolutionGene>>();
+            var KlasList = XMLParser.GetKlasList();
 
             for (int i = 0; i < cGenes.Count; i++) {
                 var c1 = cGenes[i];
                 cGenes.RemoveAt(i);
                 for (int j = 0; j < cGenes.Count; j++) {
                     var c2 = cGenes[j];
+                    if (KlasList[c1.ID - 1].Can_Share_Room != null) {
+                        if (Array.Exists(KlasList[c1.ID - 1].Can_Share_Room, element => element == c2.ID)) {
+                            continue; //if the two classes are allowed to share a room, skip the rest of this itteration 
+                        }
+                    }
                     if (c1.ID != c2.ID) {
                         var c1Start = c1.SolutionTime.Start;
                         var c2Start = c2.SolutionTime.Start;
