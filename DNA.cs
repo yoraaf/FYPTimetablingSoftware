@@ -37,11 +37,9 @@ namespace FYPTimetablingSoftware {
 
 		public DNA Crossover(DNA otherParent, int id) {
 			DNA child = new DNA(id, Genes.Length, random, getRandomGene, fitnessFunction, shouldInitGenes: false);
-
 			for (int i = 0; i < Genes.Length; i++) {
 				child.Genes[i] = LockedRandomDouble() < 0.5 ? Genes[i] : otherParent.Genes[i];
 			}
-
 			return child;
 		}
 
@@ -53,15 +51,19 @@ namespace FYPTimetablingSoftware {
 				int totalV = Genes[i].Violations + otherParent.Genes[i].Violations;
 				int randomInt = GeneticAlgorithm<T>.LockedRandomInt(0,totalV);
 				if (Genes[i].Violations < otherParent.Genes[i].Violations) {
-					if (randomInt <= Genes[i].Violations) {
+					if (randomInt <= otherParent.Genes[i].Violations) {
+						//if its lower than the one with the most violations, pick the lowest violations
 						child.Genes[i] = Genes[i];
 					} else {
+						//if its higher than most violations, pick high
 						child.Genes[i] = otherParent.Genes[i];
 					}
 				} else {
 					if (randomInt <= otherParent.Genes[i].Violations) {
+						//if its lower than the one with the most violations, pick the lowest violations
 						child.Genes[i] = otherParent.Genes[i];
 					} else {
+						//if its higher than most violations, pick high
 						child.Genes[i] = Genes[i];
 					}
 				}

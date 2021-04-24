@@ -35,8 +35,6 @@ namespace FYPTimetablingSoftware {
             KlasList = new Klas[classes.ChildNodes.Count];
             for (int i = 0; i < classes.ChildNodes.Count; i++) { //loop through all classes
                 XmlNode node = classes.ChildNodes.Item(i);
-                XmlAttributeCollection attr = node.Attributes;
-                
                 List<XmlNode> TimeNodeList = new List<XmlNode>();
                 List<XmlNode> RoomNodeList = new List<XmlNode>();
                 foreach (XmlNode n in node.ChildNodes) {
@@ -48,7 +46,8 @@ namespace FYPTimetablingSoftware {
                     }
                 }
                 KlasTime[] TimeArr = ReadTimes(TimeNodeList); //find all the time attributes 
-                
+
+                XmlAttributeCollection attr = node.Attributes;
                 Room[] KlasRooms = new Room[RoomNodeList.Count];
                 Dictionary<int, double> KlasRoomPref = new Dictionary<int, double>();
                 for(int j = 0; j<RoomNodeList.Count; j++) {

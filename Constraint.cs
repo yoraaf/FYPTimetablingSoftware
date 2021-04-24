@@ -551,8 +551,5 @@ namespace FYPTimetablingSoftware {
             //This doesn't seem to be a real constraint, more of a property.
             return 0;
         }
-
-
-
     }
 }

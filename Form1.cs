@@ -134,14 +134,14 @@ namespace FYPTimetablingSoftware {
                 AverageTimePerGen = stopwatch.ElapsedMilliseconds / 25;
             }
 
-            if (ga.Generation == 100) { 
+            /*if (ga.Generation == 100) { 
                 enabled = false;
                 LoopRunning = false;
 
                 Console.WriteLine("------------------------------------------------------------------------------");
                 Console.WriteLine("Reached generation 100");
                 Console.WriteLine("------------------------------------------------------------------------------");
-            }
+            }*/
             aRunning = false;
         }
 

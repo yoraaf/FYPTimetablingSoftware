@@ -71,10 +71,10 @@ namespace FYPTimetablingSoftware {
 			newPopulation.Clear();
 			Array.Clear(NewGenerationArr, 0, NewGenerationArr.Length);
 
-			Thread t = new Thread(new ThreadStart(ThreadProc));
-			t.Start();
+			//Thread t = new Thread(new ThreadStart(ThreadProc));
+			//t.Start();
 
-			for (int i = 0; i < Population.Count/2; i++) {
+			for (int i = 0; i < Population.Count; i++) {
 				if (i < Elitism && i < Population.Count/2) { //elitism makes it so that the top (5) make it into the next generation 
 					NewGenerationArr[i] = Population[i];
 				} else if (i < Population.Count) {
@@ -87,8 +87,8 @@ namespace FYPTimetablingSoftware {
 					NewGenerationArr[i] = child;
 				} 
 			}
-			Debug.WriteLine("Main thread done");
-			t.Join();
+			//Debug.WriteLine("Main thread done");
+			//t.Join();
 
 			Population = NewGenerationArr.ToList(); 
 
@@ -183,8 +183,7 @@ namespace FYPTimetablingSoftware {
 
 		private DNA ChooseParent() {
 			//tournament style selection
-			double randomNumber = GetFitnessSum() * LockedRandomDouble();
-			int tournamentSize =  (Int32)Math.Floor(Population.Count * 0.2);
+			int tournamentSize =  (Int32)Math.Floor(Population.Count * 0.02);
 			DNA[] tournamentMembers = new DNA[tournamentSize];
 			for (int i = 0; i < tournamentSize; i++) {
 				DNA x;
@@ -202,7 +201,7 @@ namespace FYPTimetablingSoftware {
 				} while (tournamentMembers.Contains(x));
 				tournamentMembers[i] = x;
 			}
-			//sort tournament members my fitness and return the fittest one
+			//sort tournament members by fitness and return the fittest one
 			Array.Sort(tournamentMembers, CompareDNA); 
 			//Console.WriteLine("top ")
 			return tournamentMembers[0];
