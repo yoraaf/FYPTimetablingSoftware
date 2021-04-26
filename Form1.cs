@@ -24,13 +24,9 @@ namespace FYPTimetablingSoftware {
 
         private readonly SynchronizationContext SyncContext;
         private DateTime StartTime;
-        //Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque eget ligula dapibus, volutpat sapien a, sodales eros. Vestibulum et fringilla nibh. Mauris viverra lacus vel nunc fringilla, nec viverra orci pellentesque.
-        readonly string targetString = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque eget ligula dapibus, volutpat sapien a, sodales eros. Vestibulum et fringilla nibh. Mauris viverra lacus vel nunc fringilla, nec viverra orci pellentesque.";
-        readonly string validCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.|!#$%&/()=? ";
-        readonly int nOfMembersToDisplay = 20;
-        readonly int populationSize = 500;
-        readonly float mutationRate = 0.01f;
-        readonly int elitism = 5;
+        readonly int populationSize = Program.PopulationSize;
+        readonly float mutationRate = Program.MutationRate;
+        readonly int elitism = Program.Elitism;
         bool enabled = false;
         bool aRunning = false;
         float oldFitness = Int32.MaxValue;
@@ -39,7 +35,7 @@ namespace FYPTimetablingSoftware {
         private Constraint[] HardConstraints;
         private Stopwatch stopwatch = new Stopwatch();
         private string constraintResults = "";
-        private string[] constraintResultsArr = new string[500];
+        private string[] constraintResultsArr = new string[Program.PopulationSize];
         private long AverageTimePerGen = 0;
         public static int TotalConstraintNr;
         public static float MaxViolationWeight;
@@ -73,10 +69,6 @@ namespace FYPTimetablingSoftware {
             Debug.WriteLine(startTimeString);
             stopwatch.Start();
             //StartTimeValueLbl
-            if (string.IsNullOrEmpty(targetString)) {
-                Console.Error.WriteLine("Target string is null or empty");
-                enabled = false;
-            }
             fitnessSeries = fitnessChart.Series.Add("fitness");
             fitnessSeries.ChartType = SeriesChartType.Line;
             aTimer = new System.Timers.Timer(1);
@@ -93,15 +85,6 @@ namespace FYPTimetablingSoftware {
             SolutionGene output = new SolutionGene(k.ID, a, b);
             return output;
         }
-
-        /*private Klas GetRandomKlasGene(Klas k) {
-            int a = random.Next(0, k.Rooms.Length);
-            int b = random.Next(0, k.Times.Length);
-            k.SolutionRoom = k.Rooms[a];
-            k.SolutionTime = k.Times[b];
-            Console.WriteLine("kID: " + k.ID + " \tb: " + b +" \t<"+ k.SolutionTime+">");
-            return k;
-        }*/
 
         private void OnTimedEvent(Object source, ElapsedEventArgs e) {
             if (!aRunning) { //check if the previous call is still running 
@@ -134,14 +117,21 @@ namespace FYPTimetablingSoftware {
                 AverageTimePerGen = stopwatch.ElapsedMilliseconds / 25;
             }
 
-            /*if (ga.Generation == 100) { 
+            if (ga.Generation == 502) {
+                if (stopwatch.IsRunning) {
+                    stopwatch.Stop();
+                }
+                Console.WriteLine("Reached Gen 500, stopping...");
+                Console.WriteLine("Generation: " + ga.Generation + " ; Fitness: " + ga.BestFitness);
+                
                 enabled = false;
                 LoopRunning = false;
+                aTimer.Enabled = enabled;
 
-                Console.WriteLine("------------------------------------------------------------------------------");
-                Console.WriteLine("Reached generation 100");
-                Console.WriteLine("------------------------------------------------------------------------------");
-            }*/
+                //The popup is to draw the user's attention when gen 500 is reached 
+                var popup = new Form();
+                popup.ShowDialog();
+            }
             aRunning = false;
         }
 
@@ -150,11 +140,6 @@ namespace FYPTimetablingSoftware {
             LoopRunning = true;
             AlgorithmLoop();
             aTimer.Enabled = enabled;
-        }
-
-        private char GetRandomCharacter() {
-            int i = random.Next(validCharacters.Length);
-            return validCharacters[i];
         }
 
         private float FitnessFunction(int index) { //calculate fitness of 1 member of the population (DNA)

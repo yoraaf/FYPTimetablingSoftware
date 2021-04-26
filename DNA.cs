@@ -43,13 +43,13 @@ namespace FYPTimetablingSoftware {
 			return child;
 		}
 
-		/*
-		public DNA<T> CrossoverViolation(DNA<T> otherParent, int id) {
-			DNA<T> child = new DNA<T>(id, Genes.Length, random, getRandomGene, fitnessFunction, shouldInitGenes: false);
+		
+		public DNA CrossoverViolation(DNA otherParent, int id) {
+			DNA child = new DNA(id, Genes.Length, random, getRandomGene, fitnessFunction, shouldInitGenes: false);
 
 			for (int i = 0; i < Genes.Length; i++) {
 				int totalV = Genes[i].Violations + otherParent.Genes[i].Violations;
-				int randomInt = GeneticAlgorithm<T>.LockedRandomInt(0,totalV);
+				int randomInt = GeneticAlgorithm.LockedRandomInt(0,totalV);
 				if (Genes[i].Violations < otherParent.Genes[i].Violations) {
 					if (randomInt <= otherParent.Genes[i].Violations) {
 						//if its lower than the one with the most violations, pick the lowest violations
@@ -58,7 +58,7 @@ namespace FYPTimetablingSoftware {
 						//if its higher than most violations, pick high
 						child.Genes[i] = otherParent.Genes[i];
 					}
-				} else {
+				} else if(Genes[i].Violations > otherParent.Genes[i].Violations) {
 					if (randomInt <= otherParent.Genes[i].Violations) {
 						//if its lower than the one with the most violations, pick the lowest violations
 						child.Genes[i] = otherParent.Genes[i];
@@ -66,10 +66,12 @@ namespace FYPTimetablingSoftware {
 						//if its higher than most violations, pick high
 						child.Genes[i] = Genes[i];
 					}
+				} else { //if they're equal, then its 50/50
+					child.Genes[i] = LockedRandomDouble() < 0.5 ? Genes[i] : otherParent.Genes[i];
 				}
 			}
 			return child;
-		}*/
+		}
 
 		public void Mutate(float mutationRate) {
 			for (int i = 0; i < Genes.Length; i++) {

@@ -262,8 +262,10 @@ namespace FYPTimetablingSoftware {
                     var c2 = cGenes[j];
                     if (c1.ID != c2.ID) {
                         if (c1.SolutionRoom.ID == c2.SolutionRoom.ID) {
-                            numberOfRoomsShared++;
-                        } 
+                            numberOfRoomsShared++;//this is a good thing
+                        } else {
+                            c1.Violations++;
+                        }
                     }
                 }
             }
@@ -284,6 +286,8 @@ namespace FYPTimetablingSoftware {
 
         private float BTB(List<SolutionGene> cGenes) {
             int numberOfBTB = 0;
+            List<SolutionGene> goodGenes = new List<SolutionGene>();
+
             foreach(var g1 in cGenes) {
                 foreach(var g2 in cGenes) {
                     if (g1.SolutionTime.Days.Equals(g2.SolutionTime.Days)) {
@@ -291,12 +295,19 @@ namespace FYPTimetablingSoftware {
                             //checks if the end of g1 is equal to the start of g2 (or 1 slot later)
                             if (g1.SolutionRoom.ID == g2.SolutionRoom.ID) { //check if its the same room
                                 numberOfBTB++;
+                                if (!goodGenes.Contains(g1)) {
+                                    goodGenes.Add(g1);
+                                }
                             }
                         }
                     }
                 }
             }
-            
+            foreach(var gene in cGenes) {
+                if (!goodGenes.Contains(gene)) {
+                    gene.Violations++;
+                }
+            }
             if(numberOfBTB == cGenes.Count - 1) {
                 return IsHardConstraint ? 0 : Pref; //satisfied therefore no penalty 
             } else {
@@ -307,15 +318,23 @@ namespace FYPTimetablingSoftware {
 
         private float BTB_TIME(List<SolutionGene> cGenes) {
             int numberOfBTB = 0;
+            List<SolutionGene> goodGenes = new List<SolutionGene>();
             foreach (var g1 in cGenes) {
                 foreach (var g2 in cGenes) {
                     if (g1.SolutionTime.Start + g1.SolutionTime.Length == g2.SolutionTime.Start || g1.SolutionTime.Start + g1.SolutionTime.Length == g2.SolutionTime.Start + 1) {
                         //checks if the end of g1 is equal to the start of g2 (or 1 slot later)
                         numberOfBTB++;
+                        if (!goodGenes.Contains(g1)) {
+                            goodGenes.Add(g1);
+                        }
                     }
                 }
             }
-
+            foreach (var gene in cGenes) {
+                if (!goodGenes.Contains(gene)) {
+                    gene.Violations++;
+                }
+            }
             if (numberOfBTB == cGenes.Count - 1) {
                 return IsHardConstraint ? 0 : Pref; //satisfies therefore no penalty 
             } else {
@@ -326,6 +345,7 @@ namespace FYPTimetablingSoftware {
 
         private float SAME_TIME(List<SolutionGene> cGenes) {
             int numberOfSameTime = 0;
+            List<SolutionGene> goodGenes = new List<SolutionGene>();
             cGenes.Sort((a, b) => {
                 if (a.SolutionTime.Length > b.SolutionTime.Length) {
                     return -1;
@@ -342,10 +362,18 @@ namespace FYPTimetablingSoftware {
                     var t2 = cGenes[i + 1].SolutionTime;
                     if(t1.Start <= t2.Start && t1.Start+t1.Length >= t2.Start + t2.Length) {
                         numberOfSameTime++;
+                        if (!goodGenes.Contains(cGenes[i])) {
+                            goodGenes.Add(cGenes[i]);
+                        }
                     }
                 }
             }
-            if(numberOfSameTime == cGenes.Count - 1) {
+            foreach (var gene in cGenes) {
+                if (!goodGenes.Contains(gene)) {
+                    gene.Violations++;
+                }
+            }
+            if (numberOfSameTime == cGenes.Count - 1) {
                 return IsHardConstraint ? 0 : Pref;
             } else {
                 return IsHardConstraint ? Pref : 0; //violated therefore penalty (unless p then this is a good thing)
@@ -354,16 +382,26 @@ namespace FYPTimetablingSoftware {
 
         private float SAME_START(List<SolutionGene> cGenes) {
             int numberSameStart = 0;
+            List<SolutionGene> goodGenes = new List<SolutionGene>();
             SolutionGene[] genesArr = cGenes.ToArray();
             for (int i = cGenes.Count-1; i > 0; i--) {
-                var t1 = cGenes[i].SolutionTime;
+                var g1 = cGenes[i];
+                var t1 = g1.SolutionTime;
                 cGenes.RemoveAt(i);
                 for (int j = 0; j < cGenes.Count; j++) {
                     var t2 = cGenes[j].SolutionTime;
                     if (t1.Start >= t2.Start && t1.Start < t2.Start+6) {
                         //if g1 and g2 are within the same 30min timeslot
                         numberSameStart++;
+                        if (!goodGenes.Contains(g1)) {
+                            goodGenes.Add(g1);
+                        }
                     }
+                }
+            }
+            foreach (var gene in genesArr) {
+                if (!goodGenes.Contains(gene)) {
+                    gene.Violations++;
                 }
             }
             if (numberSameStart == genesArr.Length - 1) {
@@ -388,6 +426,7 @@ namespace FYPTimetablingSoftware {
             });
 
             for (int i = cGenes.Count - 1; i > 0; i--) {
+                var g1 = cGenes[i];
                 var d1 = cGenes[i].SolutionTime.Days;
                 daysArray[i] = d1;
                 cGenes.RemoveAt(i);
@@ -402,6 +441,8 @@ namespace FYPTimetablingSoftware {
                     }
                     if (!bad) {
                         numberOfSameDays++;
+                    } else {
+                        g1.Violations++;
                     }
                 }
             }
@@ -439,6 +480,7 @@ namespace FYPTimetablingSoftware {
                         } else if (distance > 50 && distance <= 100) {
                             score = 4;
                         } else if(distance > 100){
+                            g1.Violations++;
                             return Pref; //discance > 100 is prohibited
                         }
                     }
@@ -450,17 +492,25 @@ namespace FYPTimetablingSoftware {
 
         private float NHB1_5(List<SolutionGene> cGenes) {
             int numberOfNHB = 0;
+            List<SolutionGene> goodGenes = new List<SolutionGene>();
             foreach (var g1 in cGenes) {
                 foreach (var g2 in cGenes) {
                     if (g1.SolutionTime.Days.Equals(g2.SolutionTime.Days)) {
                         if (g1.SolutionTime.Start + g1.SolutionTime.Length == g2.SolutionTime.Start+18) {
                             //checks if the end of g1 is 1 and a half h ours later than g2 start (18 units)
                             numberOfNHB++;
+                            if (!goodGenes.Contains(g1)) {
+                                goodGenes.Add(g1);
+                            }
                         }
                     }
                 }
             }
-
+            foreach (var gene in cGenes) {
+                if (!goodGenes.Contains(gene)) {
+                    gene.Violations++;
+                }
+            }
             if (numberOfNHB == cGenes.Count - 1) {
                 return IsHardConstraint ? 0 : Pref; //satisfied therefore no penalty 
             } else {
@@ -470,17 +520,25 @@ namespace FYPTimetablingSoftware {
 
         private float NHB_GTE1(List<SolutionGene> cGenes) {
             int numberOfNHB_GTE = 0;
+            List<SolutionGene> goodGenes = new List<SolutionGene>();
             foreach (var g1 in cGenes) {
                 foreach (var g2 in cGenes) {
                     if (g1.SolutionTime.Days.Equals(g2.SolutionTime.Days)) {
                         if (g1.SolutionTime.Start + g1.SolutionTime.Length >= g2.SolutionTime.Start + 12) {
                             //checks if the end of g1 is 1 and a half h ours later than g2 start (18 units)
                             numberOfNHB_GTE++;
+                            if (!goodGenes.Contains(g1)) {
+                                goodGenes.Add(g1);
+                            }
                         }
                     }
                 }
             }
-
+            foreach (var gene in cGenes) {
+                if (!goodGenes.Contains(gene)) {
+                    gene.Violations++;
+                }
+            }
             if (numberOfNHB_GTE == cGenes.Count - 1) {
                 return IsHardConstraint ? 0 : Pref; //satisfied therefore no penalty 
             } else {
@@ -527,6 +585,7 @@ namespace FYPTimetablingSoftware {
                                     //if all if statements have passed true, and they share a day,
                                     //increase the conflict counter and add to the conflict list for debugging
                                     roomConflicts++;
+                                    c1.Violations++;
                                     if (conflictingGenes.ContainsKey(c1)) {
                                         conflictingGenes[c1].Add(c2);
                                     } else {

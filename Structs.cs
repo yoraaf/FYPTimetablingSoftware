@@ -79,6 +79,8 @@ namespace FYPTimetablingSoftware {
         public int SAME_STUDENTS { get; private set; }
         public int SPREAD { get; private set; }
         public int ROOM_CONFLICTS { get; private set; }
+        public string Properties { get; private set; }
+        public string PropValue { get; private set; }
         public Dictionary<string, int> ConstraintViolations { get; private set; }
 
         public CsvData(int gen, float fit, Dictionary<string, int> violations, int timeTaken) {
@@ -101,6 +103,33 @@ namespace FYPTimetablingSoftware {
                     PropertyInfo propInfo = thisType.GetProperty(entry.Key);
                     propInfo.SetValue(this, entry.Value);
                 }
+            }
+
+            switch (gen) {
+                case 2:
+                    Properties = "Tournament_R";
+                    PropValue = "" + Program.TournamentRatio;
+                    break;
+                case 3:
+                    Properties = "Crossover";
+                    PropValue = "" + Program.CrossoverMethod;
+                    break;
+                case 4:
+                    Properties = "Selection";
+                    PropValue = "" + Program.SelectionMethod;
+                    break;
+                case 5:
+                    Properties = "Mutation";
+                    PropValue = "" + Program.MutationRate;
+                    break;
+                case 6:
+                    Properties = "Elitism";
+                    PropValue = "" + Program.Elitism;
+                    break;
+                case 7:
+                    Properties = "Population";
+                    PropValue = "" + Program.PopulationSize;
+                    break;
             }
         }
     }

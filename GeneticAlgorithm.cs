@@ -81,7 +81,14 @@ namespace FYPTimetablingSoftware {
 					DNA parent1 = ChooseParent();
 					DNA parent2 = ChooseParent();
 
-					DNA child = parent1.Crossover(parent2, i);
+					DNA child;
+					if (Program.CrossoverMethod == "Discrete") {
+						child = parent1.Crossover(parent2, i);
+					} else if (Program.CrossoverMethod == "Violation") {
+						child = parent1.CrossoverViolation(parent2, i);
+					} else {
+						throw new InvalidOperationException("Program.CrossoverMethod not defined properly"); 
+                    }
 
 					child.Mutate(MutationRate);
 					NewGenerationArr[i] = child;
@@ -183,7 +190,7 @@ namespace FYPTimetablingSoftware {
 
 		private DNA ChooseParent() {
 			//tournament style selection
-			int tournamentSize =  (Int32)Math.Floor(Population.Count * 0.02);
+			int tournamentSize =  (Int32)Math.Floor(Population.Count * Program.TournamentRatio);
 			DNA[] tournamentMembers = new DNA[tournamentSize];
 			for (int i = 0; i < tournamentSize; i++) {
 				DNA x;
