@@ -97,15 +97,11 @@ namespace FYPTimetablingSoftware {
 
         public float GetFitness(SolutionGene[] genes) {
             List<SolutionGene> cGenes = new List<SolutionGene>();
-            //int k = 0;
             for (int i = 0; i < genes.Length; i++) {
                 if (ClassIDs.Contains(genes[i].ID)) {
                     cGenes.Add(genes[i]);
-                    //Console.WriteLine(genes[i]);
-                    //k++;
                 }
             }
-            //float result = FitnessFunction(cGenes);
             float result = (FitnessFunction!=null) ? FitnessFunction(cGenes) : 0;
             return result;
         }
@@ -114,14 +110,14 @@ namespace FYPTimetablingSoftware {
             float result = Pref;
             
             int adhered = cGenes.Count;
-            //^Some efficiency could be added to this^
+
             for (int i = cGenes.Count-1; i >= 0; i--) {
                 bool violation = false;
                 SolutionGene c1 = cGenes[i];
                 cGenes.RemoveAt(i);
                 int minTime = c1.SolutionTime.Start;
                 int maxTime = minTime + c1.SolutionTime.Length;
-                for(int j = 0; j < cGenes.Count; j++) { //currently this is checkinng some combinations of times twice, could be optimized 
+                for(int j = 0; j < cGenes.Count; j++) { 
                     SolutionGene c2 = cGenes[j];
                     if(i != j) { //make sure you're not comparing the same Klas to itself 
                         BitArray andResult = (BitArray)c1.SolutionTime.Days.Clone();
@@ -135,7 +131,6 @@ namespace FYPTimetablingSoftware {
                                 violation = true;
                                 adhered--;
                                 c1.Violations++; //mark that this gene caused a violation 
-                                //result = 0;
                             }
                         }
                     }
@@ -147,24 +142,18 @@ namespace FYPTimetablingSoftware {
             }
             float temp = (float)(adhered) / (float)(ClassIDs.Length);
             result = temp * Pref;
-            /*if (result > 0) {
-                Console.WriteLine("uhhhh");
-            }*/
             return result;
         }
 
         public float SPREAD(List<SolutionGene> cGenes) {
-            float result = Pref;
-
             int adhered = cGenes.Count;
-            //^Some efficiency could be added to this^
             for (int i = cGenes.Count - 1; i >= 0; i--) {
                 bool violation = false;
                 SolutionGene c1 = cGenes[i];
                 cGenes.RemoveAt(i);
                 int minTime = c1.SolutionTime.Start;
                 int maxTime = minTime + c1.SolutionTime.Length;
-                for (int j = 0; j < cGenes.Count; j++) { //currently this is checkinng some combinations of times twice, could be optimized 
+                for (int j = 0; j < cGenes.Count; j++) {
                     SolutionGene c2 = cGenes[j];
                     if (i != j) { //make sure you're not comparing the same Klas to itself 
                         BitArray andResult = (BitArray)c1.SolutionTime.Days.Clone();
@@ -175,7 +164,6 @@ namespace FYPTimetablingSoftware {
                                 violation = true;
                                 adhered--;
                                 c1.Violations++; //mark that this gene caused a violation 
-                                //result = 0;
                             }
                         }
                     }
@@ -183,7 +171,7 @@ namespace FYPTimetablingSoftware {
 
             }
             float temp = (float)(adhered) / (float)(ClassIDs.Length);
-            result = temp * Pref;
+            var result = temp * Pref;
             if (result > 0) {
                 Console.WriteLine("uhhhh");
             }
@@ -199,7 +187,6 @@ namespace FYPTimetablingSoftware {
         /// <param name="cGenes"></param>
         /// <returns>float of the fitness</returns>
         public float SAME_STUDENTS(List<SolutionGene> cGenes) {
-            float result = 0;
             int geneCount = cGenes.Count;
             int studentConflicts = 0;
             for(int i = geneCount-1; i >= 0; i--) {
@@ -252,12 +239,9 @@ namespace FYPTimetablingSoftware {
         private float SAME_ROOM(List<SolutionGene> cGenes) {
             int numberOfRoomsShared = 0;
             int nrOfGenes = cGenes.Count;
-            //SolutionGene[] genesArr = cGenes.ToArray();
-            //String printString = "=============\r\n Count: " + nrOfGenes+"\r\n";
             for(int i = cGenes.Count-1; i>=0; i--) {
                 var c1 = cGenes[i];
                 cGenes.RemoveAt(i);
-                //printString += "[" + i + "] " + c1.ID+"\r\n";
                 for (int j = 0;j<cGenes.Count;j++) {
                     var c2 = cGenes[j];
                     if (c1.ID != c2.ID) {
@@ -269,8 +253,6 @@ namespace FYPTimetablingSoftware {
                     }
                 }
             }
-            //printString += "=============";
-            //Debug.WriteLine(printString);
             if (IsHardConstraint) {
                 if (numberOfRoomsShared == nrOfGenes - 1) {
                     //if all rooms are shared, that's good
@@ -606,9 +588,5 @@ namespace FYPTimetablingSoftware {
             
         }
 
-        private float CAN_SHARE_ROOM(List<SolutionGene> cGenes) {
-            //This doesn't seem to be a real constraint, more of a property.
-            return 0;
-        }
     }
 }

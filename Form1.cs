@@ -53,8 +53,6 @@ namespace FYPTimetablingSoftware {
             SyncContext = SynchronizationContext.Current;
             GUIDispatcher = Dispatcher.CurrentDispatcher;
             InitializeComponent();
-            //targetTextBox.Text = targetString;
-            //initAlgorithm();
         }
         private void initAlgorithm() {
            
@@ -68,12 +66,9 @@ namespace FYPTimetablingSoftware {
             startTimeString = startTimeString.Replace(':', '-');
             Debug.WriteLine(startTimeString);
             stopwatch.Start();
-            //StartTimeValueLbl
             fitnessSeries = fitnessChart.Series.Add("fitness");
             fitnessSeries.ChartType = SeriesChartType.Line;
             aTimer = new System.Timers.Timer(1);
-            //aTimer.Elapsed += OnTimedEvent;
-            //aTimer.Enabled = enabled;
 
             random = new System.Random();
             ga = new GeneticAlgorithm(populationSize, XMLParser.GetKlasList().Length, random, GetRandomSolutionGene, FitnessFunction, UpdateAlgorithm, elitism, mutationRate);
@@ -154,7 +149,6 @@ namespace FYPTimetablingSoftware {
             string constraintResults = "";
             for (int i = 0; i < SoftConstraints.Length; i++) {
                 float fitness = SoftConstraints[i].GetFitness(dna.Genes);
-                //constraintResults += SoftConstraints[i].Type + "\t" + fitness + "\r\n";
                 constraintResults += SoftConstraints[i].Type + " "+fitness + " ; ";
                 if(SoftConstraints[i].Type == "ROOM_CONFLICTS") {
                     int v = (int)Math.Floor(fitness / Constraint.RoomConflictWeight);
@@ -169,7 +163,6 @@ namespace FYPTimetablingSoftware {
 
             for (int i = 0; i < HardConstraints.Length; i++) {
                 float fitness = HardConstraints[i].GetFitness(dna.Genes);
-                //constraintResults += SoftConstraints[i].Type + "\t" + fitness + "\r\n";
                 constraintResults += HardConstraints[i].Type + " " + fitness + " ; ";
                 if (fitness > 0) {
                     dna.ConstraintViolations[HardConstraints[i].Type] += 1;
@@ -188,21 +181,15 @@ namespace FYPTimetablingSoftware {
                     roomPref += (float)dna.KlasArr[i].RoomPref[id];
                 }
             }
-            //constraintResults += "TimePref" + "\t" + timePref + "\r\n"; //this is gonna spam it faster than the text gets updated
+            
             constraintResults += "Time "+timePref + " ; ";
             constraintResults += "Room " + roomPref + " ; ";
             score += timePref * 0.1f;
             score += roomPref * 0.1f;
-            //score = (float)((Math.Pow(2, score) - 1) / (2 - 1));
-            //constraintResults += "Total score:" + "\t" + score + "\r\n";
             constraintResults += "T " + score + "\r\n";
             dna.ConstraintResult = constraintResults;
             constraintResultsArr[index] = constraintResults;
             return score;
-        }
-
-        private SolutionGene[] getGenes(int j) {
-            return ga.Population[j].Genes;
         }
 
         private long LastTimeTaken = 0;
@@ -241,17 +228,6 @@ namespace FYPTimetablingSoftware {
                 AverageValueLbl.Text = AverageTimePerGen + "ms";
             }
         }
-
-        private string CharArrayToString(char[] charArray) {
-            var sb = new StringBuilder();
-            foreach (var c in charArray) {
-                sb.Append(c);
-            }
-
-            return sb.ToString();
-        }
-
-        
 
         private async void startButton_Click(object sender, EventArgs e) {
             initAlgorithm();
@@ -300,11 +276,8 @@ namespace FYPTimetablingSoftware {
         }
 
         private void XMLTestButton_Click(object sender, EventArgs e) {
-            //string workingDirectory = Environment.CurrentDirectory;
-            //string projectDirectory = Directory.GetParent(workingDirectory).Parent.FullName;
             XMLParser p = new XMLParser(projectDirectory+ "/DataSet/pu-fal07-llr_FYP_fix.xml");
-            // /DataSet/pu-fal07-llr_FYP_fix.xml
-            // SmallTest01.xml
+
             SoftConstraints = XMLParser.GetSoftConstraints();
             HardConstraints = XMLParser.GetHardConstraints();
             Console.BackgroundColor = ConsoleColor.Green;
@@ -329,7 +302,8 @@ namespace FYPTimetablingSoftware {
                     MinViolationWeight += HardConstraints[i].Pref;
                 }
             }
-            MaxWeightValueLbl.Text = "" + MaxViolationWeight;
+            int NumberOfConstraints = HardConstraints.Length + SoftConstraints.Length;
+            MaxWeightValueLbl.Text = "" + NumberOfConstraints + " + "+ XMLParser.GetKlasList().Length;
             MinWeightValueLbl.Text = "" + MinViolationWeight;
             NrOfConstraintsValuelbl.Text = ""+TotalConstraintNr;
         }

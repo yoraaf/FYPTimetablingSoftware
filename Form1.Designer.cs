@@ -236,9 +236,9 @@
             this.AverageValueLbl.AutoSize = true;
             this.AverageValueLbl.Location = new System.Drawing.Point(464, 85);
             this.AverageValueLbl.Name = "AverageValueLbl";
-            this.AverageValueLbl.Size = new System.Drawing.Size(102, 13);
+            this.AverageValueLbl.Size = new System.Drawing.Size(96, 13);
             this.AverageValueLbl.TabIndex = 17;
-            this.AverageValueLbl.Text = "[Calculated at g100]";
+            this.AverageValueLbl.Text = "[Calculated at g25]";
             // 
             // AverageLbl
             // 
@@ -282,18 +282,18 @@
             this.MaxWeightValueLbl.AutoSize = true;
             this.MaxWeightValueLbl.Location = new System.Drawing.Point(121, 120);
             this.MaxWeightValueLbl.Name = "MaxWeightValueLbl";
-            this.MaxWeightValueLbl.Size = new System.Drawing.Size(64, 13);
+            this.MaxWeightValueLbl.Size = new System.Drawing.Size(75, 13);
             this.MaxWeightValueLbl.TabIndex = 22;
-            this.MaxWeightValueLbl.Text = "Max Weight";
+            this.MaxWeightValueLbl.Text = "Max Violations";
             // 
             // MaxWeightLbl
             // 
             this.MaxWeightLbl.AutoSize = true;
             this.MaxWeightLbl.Location = new System.Drawing.Point(13, 120);
             this.MaxWeightLbl.Name = "MaxWeightLbl";
-            this.MaxWeightLbl.Size = new System.Drawing.Size(61, 13);
+            this.MaxWeightLbl.Size = new System.Drawing.Size(75, 13);
             this.MaxWeightLbl.TabIndex = 21;
-            this.MaxWeightLbl.Text = "Max weight";
+            this.MaxWeightLbl.Text = "Max Violations";
             // 
             // MinWeightValueLbl
             // 

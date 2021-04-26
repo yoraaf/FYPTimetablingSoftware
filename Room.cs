@@ -10,7 +10,6 @@ namespace FYPTimetablingSoftware {
         public bool Constraint { get; }
         public int Cap { get; }
         public int[] Loc { get; }
-        //public double Pref { get; } This is now within the Klas
         public RoomSharing Sharing { get; }
         private bool HasSharing = false;
 
@@ -19,7 +18,6 @@ namespace FYPTimetablingSoftware {
             Constraint = constraint;
             Cap = cap;
             Loc = loc;
-            //Pref = pref;
             Sharing = sharing;
             HasSharing = true;
 
@@ -30,8 +28,6 @@ namespace FYPTimetablingSoftware {
             Cap = cap;
             Loc = loc;
             HasSharing = false;
-            //Sharing = null;
-            //Pref = pref;
 
         }
 

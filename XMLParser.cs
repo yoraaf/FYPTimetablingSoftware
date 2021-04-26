@@ -12,11 +12,8 @@ namespace FYPTimetablingSoftware {
         private XmlDocument doc = new XmlDocument();
         private readonly XmlNode root;
         private static Room[] RoomList;
-        //private string[,] HardConstraints;
-        //private string[,] SoftConstraints;
         private static Constraint[] HardConstraints;
         private static Constraint[] SoftConstraints;
-        //private KlasTime[] KlasTimes;
         private static Klas[] KlasList;
 
         public XMLParser(string fileStr) {
@@ -31,7 +28,7 @@ namespace FYPTimetablingSoftware {
             XmlNode classes = root["classes"];
             XmlNode class1 = classes.ChildNodes.Item(0);
             Console.WriteLine("class1> "+class1.OuterXml);
-            //XmlNode[] nodeList = new XmlNode[10];
+
             KlasList = new Klas[classes.ChildNodes.Count];
             for (int i = 0; i < classes.ChildNodes.Count; i++) { //loop through all classes
                 XmlNode node = classes.ChildNodes.Item(i);
@@ -57,8 +54,6 @@ namespace FYPTimetablingSoftware {
                     KlasRoomPref[roomID] = pref;
                 }
 
-
-                //string test = node.Attributes.GetNamedItem("id").Value;
                 int instructor = -1; //-1 means no instructor given
                 if(node.FirstChild.Name == "instructor") {
                     instructor = Int32.Parse(node.FirstChild.Attributes.GetNamedItem("id").Value);

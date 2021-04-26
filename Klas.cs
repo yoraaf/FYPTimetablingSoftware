@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FYPTimetablingSoftware {
     public class Klas {
-        //gave it a Dutch name because its easy to guess and did not want to make a class called class
+        //gave it a Dutch name because its easy to guess and did not want to make a class called Class
         public KlasTime[] Times { get; private set; }
         public Room[] Rooms { get; private set; }
         public int Instructor { get; private set; }
@@ -18,12 +18,8 @@ namespace FYPTimetablingSoftware {
         public int Department { get; private set; }
         public int Parent { get; private set; }
         public int[] Can_Share_Room;
-        public Dictionary<int, double> RoomPref { get; private set; } //was considering making a dict for this linking the room to the pref but since they're both arrays they'll share the same index anyway
-        //some rooms have a parent attribute, these don't have their own offering or config
-        //scheduler and commited seem to be the same for every single entry so they are not in this list
+        public Dictionary<int, double> RoomPref { get; private set; } 
 
-        /*public KlasTime SolutionTime { get; set; }
-        public Room SolutionRoom { get; set; }*/
 
 
         public Klas(int id, int offering, int config, int subpart, int classLimit, int department, int instructor, KlasTime[] times, Room[] rooms, Dictionary<int, double> roomPref) {

@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace FYPTimetablingSoftware {
 	public class GeneticAlgorithm {
-		public List<DNA> Population { get; private set; } // T is SolutionGene
+		public List<DNA> Population { get; private set; }
 		public int Generation { get; private set; }
 		public float BestFitness { get; private set; }
 		public SolutionGene[] BestGenes { get; private set; }
@@ -48,9 +48,6 @@ namespace FYPTimetablingSoftware {
 			for (int i = 0; i < populationSize; i++) {
 				Population.Add(new DNA(i, dnaSize, random, getRandomGene, fitnessFunction, shouldInitGenes: true));
 			}
-			Console.ForegroundColor = ConsoleColor.Green;
-			Console.WriteLine("-------------------------------------");
-			Console.ResetColor();
 		}
 		public static string ArrayToString(SolutionGene[] arr) {
 			string output = "";
@@ -136,25 +133,20 @@ namespace FYPTimetablingSoftware {
 			threadPoolCounter = Population.Count;
 			DoneEvt = new ManualResetEvent(false);
 
-			//ThreadPool.SetMaxThreads(25, 25); This limit doesn't seem to actually do anything 
-
 			for (int i = 0; i < Population.Count; i++) {
 				ThreadPool.QueueUserWorkItem(FitnessThreadPoolMethod, i);
 			}
-			Debug.WriteLine("Added all events");
-			//t.Join();
-			DoneEvt.WaitOne();
-			//Debug.WriteLine("done waiting");
 
+			DoneEvt.WaitOne(); //wait till all events are done 
 			BestFitness = BestDNA.Fitness;
 			BestDNA.Genes.CopyTo(BestGenes, 0);
-			//BestDNA = best;
+
 		}
 
 		private void FitnessThreadPoolMethod(object number) {
 			int n = (int)number;
 			var fit = Population[n].CalculateFitness(n);
-			//Debug.WriteLine("[" + n + "] Fitness: " + fit);
+
 			lock (fitLock) {
 				fitnessSum += fit;
 				if (Population[n].Fitness < BestDNA.Fitness) {
@@ -166,27 +158,6 @@ namespace FYPTimetablingSoftware {
 				DoneEvt.Set();
 			};
 		}
-
-		private void fitnessThread() {
-			for (int i = Population.Count/2; i < Population.Count; i++) {
-				var fit = Population[i].CalculateFitness(i);
-				lock (fitLock) {
-					fitnessSum += fit;
-					if (Population[i].Fitness < BestDNA.Fitness) {
-						BestDNA = Population[i];
-					}
-				}
-			}
-			Debug.WriteLine("Fitness second thread done");
-		}
-
-		private double GetFitnessSum() {
-			double output = 0;
-			for(int i = 0; i < Population.Count; i++) {
-				output += Population[i].Fitness;
-            }
-			return output;
-        }
 
 		private DNA ChooseParent() {
 			//tournament style selection
@@ -225,25 +196,5 @@ namespace FYPTimetablingSoftware {
             }
         }
 
-		private DNA ChooseParent_old() {
-			double r = random.NextDouble();
-			double randomNumber = r * fitnessSum * 0.9;
-			double[] fitnessArr = new double[Population.Count];
-			double[] cumulativeArr = new double[Population.Count];
-			for (int i = 0; i < Population.Count; i++) {
-				if (randomNumber < Population[i].Fitness) {
-					return Population[i];
-				}
-				fitnessArr[i] = Population[i].Fitness;
-				if (i == 0) {
-					cumulativeArr[i] = Population[i].Fitness;
-				} else {
-					cumulativeArr[i] = Population[i].Fitness + cumulativeArr[i - 1];
-				}
-				randomNumber -= Population[i].Fitness;
-			}
-			Console.Error.WriteLine("Something went wrong");
-			return null;
-		}
 	}
 }

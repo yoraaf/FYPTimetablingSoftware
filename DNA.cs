@@ -25,7 +25,7 @@ namespace FYPTimetablingSoftware {
 			ID = id;
 			if (shouldInitGenes) {
 				for (int i = 0; i < Genes.Length; i++) {
-					Genes[i] = getRandomGene(KlasArr[i]); //add cloning here 
+					Genes[i] = getRandomGene(KlasArr[i]); 
 				}
 			}
 		}
