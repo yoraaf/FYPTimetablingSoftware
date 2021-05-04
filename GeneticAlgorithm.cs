@@ -161,7 +161,7 @@ namespace FYPTimetablingSoftware {
 
 		private DNA ChooseParent() {
 			//tournament style selection
-			int tournamentSize =  (Int32)Math.Floor(Population.Count * Program.TournamentRatio);
+			int tournamentSize = (Int32)Math.Floor(Population.Count * Program.TournamentRatio);
 			DNA[] tournamentMembers = new DNA[tournamentSize];
 			for (int i = 0; i < tournamentSize; i++) {
 				DNA x;
@@ -170,9 +170,9 @@ namespace FYPTimetablingSoftware {
 				do {
 					//add random person from population to the tournament and make sure they aren't in already
 					testCounter++;
-                    if (testCounter > 500) {
+					if (testCounter > 500) {
 						Debug.WriteLine("broken");
-                    }
+					}
 					int id = LockedRandomInt(0, Population.Count);
 					logIDList.Add(id);
 					x = Population[id];
@@ -180,7 +180,7 @@ namespace FYPTimetablingSoftware {
 				tournamentMembers[i] = x;
 			}
 			//sort tournament members by fitness and return the fittest one
-			Array.Sort(tournamentMembers, CompareDNA); 
+			Array.Sort(tournamentMembers, CompareDNA);
 			//Console.WriteLine("top ")
 			return tournamentMembers[0];
 		}

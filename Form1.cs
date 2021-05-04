@@ -34,7 +34,7 @@ namespace FYPTimetablingSoftware {
         private Constraint[] SoftConstraints;
         private Constraint[] HardConstraints;
         private Stopwatch stopwatch = new Stopwatch();
-        private string constraintResults = "";
+        //private string constraintResults = "";
         private string[] constraintResultsArr = new string[Program.PopulationSize];
         private long AverageTimePerGen = 0;
         public static int TotalConstraintNr;
