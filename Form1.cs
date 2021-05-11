@@ -40,6 +40,7 @@ namespace FYPTimetablingSoftware {
         public static int TotalConstraintNr;
         public static float MaxViolationWeight;
         public static float MinViolationWeight;
+        public static string PropertiesString;
 
         private bool LoopRunning = true;
         private String startTimeString;
@@ -47,6 +48,7 @@ namespace FYPTimetablingSoftware {
         private string projectDirectory;
         private GeneticAlgorithm ga;
         private System.Random random;
+        
         public Form1() {
             workingDirectory = Environment.CurrentDirectory;
             projectDirectory = Directory.GetParent(workingDirectory).Parent.FullName;
@@ -55,7 +57,13 @@ namespace FYPTimetablingSoftware {
             InitializeComponent();
         }
         private void initAlgorithm() {
-           
+            //string popSizeString = Program.PopulationSize.ToString();
+            if(Program.CrossoverMethod == "Tournament") {
+                PropertiesString = "P_" + Program.PopulationSize.ToString().PadLeft(4, '0') + "-S_" + Program.SelectionMethod.PadRight(10, '-') + "-C_Tournament" + Program.TournamentRatio.ToString().PadRight(4,'0') + "-M_" + Program.MutationRate.ToString().PadRight(5, '0') + "_";
+            } else {
+                PropertiesString = "P_" + Program.PopulationSize.ToString().PadLeft(4, '0') + "-S_" + Program.SelectionMethod.PadRight(10, '-') + "-C_" + Program.CrossoverMethod.PadRight(7, '-')+"-M_"+Program.MutationRate.ToString().PadRight(5,'0')+"_";
+            }
+            
             StartTime = DateTime.Now;
             var culture = new CultureInfo("en-GB");
             StartTimeValueLbl.Text = StartTime.ToString(culture);
@@ -112,11 +120,11 @@ namespace FYPTimetablingSoftware {
                 AverageTimePerGen = stopwatch.ElapsedMilliseconds / 25;
             }
 
-            if (ga.Generation == 502) {
+            if (ga.Generation == Program.FinalGeneration) {
                 if (stopwatch.IsRunning) {
                     stopwatch.Stop();
                 }
-                Console.WriteLine("Reached Gen 500, stopping...");
+                Console.WriteLine("Reached Gen "+ga.Generation+", stopping...");
                 Console.WriteLine("Generation: " + ga.Generation + " ; Fitness: " + ga.BestFitness);
                 
                 enabled = false;
@@ -202,7 +210,7 @@ namespace FYPTimetablingSoftware {
 
             CsvData dataObject = new CsvData(ga.Generation, ga.BestDNA.Fitness, ga.BestDNA.ConstraintViolations, timeTaken);
             CsvRecords.Add(dataObject);
-            using (var writer = new StreamWriter(projectDirectory+"\\output\\" + startTimeString + ".csv")) 
+            using (var writer = new StreamWriter(projectDirectory+"\\output\\" + PropertiesString + startTimeString + ".csv")) 
             using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture)) {
                 csv.WriteRecords(CsvRecords);
             }

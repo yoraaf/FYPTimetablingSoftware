@@ -42,8 +42,21 @@ namespace FYPTimetablingSoftware {
 			}
 			return child;
 		}
+		public DNA[] CrossoverUniform(DNA otherParent, int id) {
+			DNA child1 = new DNA(id, Genes.Length, random, getRandomGene, fitnessFunction, shouldInitGenes: false);
+			DNA child2 = new DNA(id+1, Genes.Length, random, getRandomGene, fitnessFunction, shouldInitGenes: false);
+			for (int i = 0; i < Genes.Length; i++) {
+                if (LockedRandomDouble() < 0.5) {
+					child1.Genes[i] = Genes[i];
+					child2.Genes[i] = otherParent.Genes[i];
+                } else {
+					child1.Genes[i] = otherParent.Genes[i];
+					child2.Genes[i] = Genes[i];
+				}
+			}
+			return new DNA[] { child1, child2 };
+		}
 
-		
 		public DNA CrossoverViolation(DNA otherParent, int id) {
 			DNA child = new DNA(id, Genes.Length, random, getRandomGene, fitnessFunction, shouldInitGenes: false);
 
@@ -97,7 +110,7 @@ namespace FYPTimetablingSoftware {
 			return sb.ToString();
 		}
 		public override string ToString() {
-			return "[DNA] ID: "+ID;
+			return "[DNA] ID: "+ID + "Fitness: " +Fitness;
 		}
 	}
 }
