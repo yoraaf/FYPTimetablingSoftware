@@ -85,22 +85,22 @@ namespace FYPTimetablingSoftware {
 			if (Program.SelectionMethod == "SexBased") {
 
 				List<DNA> tempPop = new List<DNA>();
-				DNA[] sex1 = new DNA[Population.Count/2];
-				DNA[] sex2 = new DNA[Population.Count/2];
-				foreach(var member in Population) {
+				DNA[] sex1 = new DNA[Population.Count / 2];
+				DNA[] sex2 = new DNA[Population.Count / 2];
+				foreach (var member in Population) {
 					tempPop.Add(member);
 				}
 				tempPop.Shuffle(); //Since the population is by default ordered with best fitness first, it needs to be randomised before assigning gender
 
 				for (int i = 0; i < tempPop.Count / 2; i++) {
 					sex1[i] = tempPop[i];
-                }
-				for(int i = 0; i < tempPop.Count / 2; i++) {
-					sex2[i] = tempPop[i+250];
-                }
-                
+				}
+				for (int i = 0; i < tempPop.Count / 2; i++) {
+					sex2[i] = tempPop[i + 250];
+				}
 
-				for(int i = 0; i < sex1.Length; i++) {
+
+				for (int i = 0; i < sex1.Length; i++) {
 					DNA parent1 = sex1[i];
 					DNA parent2 = STournament(sex2);
 					DNA[] children = new DNA[2];
@@ -120,7 +120,7 @@ namespace FYPTimetablingSoftware {
 
 			} else {
 				for (int i = 0; i < Population.Count; i++) {
-					if (i < Elitism ) { //elitism makes it so that the top (5) make it into the next generation 
+					if (i < Elitism) { //elitism makes it so that the top (5) make it into the next generation 
 						NewGenerationArr[i] = Population[i];
 					} else if (i < Population.Count) {
 						//DNA parent1 = ChooseParent();
@@ -147,24 +147,6 @@ namespace FYPTimetablingSoftware {
 				Generation++;
 			}
 		}
-
-		/*
-		private void ThreadProc() {
-			for (int j = Population.Count/2; j < Population.Count; j++) {
-				if (j < Elitism && j < Population.Count) { //elitism makes it so that the top (5) make it into the next generation 
-					NewGenerationArr[j] = Population[j];
-				} else if (j < Population.Count) {
-					DNA parent1 = ChooseParent();
-					DNA parent2 = ChooseParent();
-
-					DNA child = parent1.Crossover(parent2, j);
-
-					child.Mutate(MutationRate);
-					NewGenerationArr[j] = child;
-				}
-			}
-			Debug.WriteLine("second thread done");
-		}*/
 
 		private int CompareDNA(DNA a, DNA b) {
 			//had to switch the >< around cz low = better
@@ -230,7 +212,6 @@ namespace FYPTimetablingSoftware {
 			}
 			//sort tournament members by fitness and return the fittest one
 			Array.Sort(tournamentMembers, CompareDNA);
-			//Console.WriteLine("top ")
 			return tournamentMembers[0];
 		}
 
@@ -255,7 +236,6 @@ namespace FYPTimetablingSoftware {
 			}
 			//sort tournament members by fitness and return the fittest one
 			Array.Sort(tournamentMembers, CompareDNA);
-			//Console.WriteLine("top ")
 			return tournamentMembers[0];
 		}
 
@@ -285,12 +265,12 @@ namespace FYPTimetablingSoftware {
 
 		private DNA RankBased() {
 			double fitnessBias = 2.5;
-			//int index = (int)(Population.Count * (fitnessBias - Math.Sqrt(fitnessBias * fitnessBias - 4.0 * (fitnessBias - 1) * LockedRandomDouble()))/ 2.0 / (fitnessBias - 1));
-			int index;
+			int index = (int)(Population.Count * (fitnessBias - Math.Sqrt(fitnessBias * fitnessBias - 4.0 * (fitnessBias - 1) * LockedRandomDouble()))/ 2.0 / (fitnessBias - 1));
+			/*int index;
 			do {
 				index = LockedRandomInt(0, Program.PopulationSize) + LockedRandomInt(0, Program.PopulationSize) - Program.PopulationSize-1; //-1 to prevent out of bounds
 				//not the most efficient method, but the simplest 
-			} while (index < 0);
+			} while (index < 0);*/
 			
 			return Population[index];
 		}
@@ -299,27 +279,6 @@ namespace FYPTimetablingSoftware {
 			int index = LockedRandomInt(0, Population.Count-1);
 			return Population[index];
 		}
-
-		/*private DNA ProportionalRoulette() { //does not work for this 
-			double fitnessSum = 0;
-			DNA parent = null;
-			for(int i = 0; i < Population.Count; i++) {
-				fitnessSum += Population[i].Fitness;
-            }
-			double r = LockedRandomDouble() * fitnessSum;
-
-			for(int i = 0; i < Population.Count; i++) {
-                if (r <= Population[i].Fitness) {
-					parent = Population[i];
-					break;
-				} else {
-					r -= Population[i].Fitness;
-                }
-            }
-			return parent;
-        }*/
-
-		
 
 		public static int LockedRandomInt(int min, int max) {
             lock (randLock) {

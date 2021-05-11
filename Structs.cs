@@ -133,4 +133,12 @@ namespace FYPTimetablingSoftware {
         }
     }
 
+    public class CsvTestData {
+        public int ID { get; set; }
+        public int Value { get; set; }
+        public CsvTestData(int id, int value) {
+            ID = id; Value = value;
+        }
+    }
+
 }

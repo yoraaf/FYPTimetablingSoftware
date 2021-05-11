@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace FYPTimetablingSoftware {
 	public class DNA {
@@ -84,6 +85,22 @@ namespace FYPTimetablingSoftware {
 				}
 			}
 			return child;
+		}
+
+		public DNA[] OnePointCrossover(DNA otherParent, int id) {
+			DNA child1 = new DNA(id, Genes.Length, random, getRandomGene, fitnessFunction, shouldInitGenes: false);
+			DNA child2 = new DNA(id + 1, Genes.Length, random, getRandomGene, fitnessFunction, shouldInitGenes: false);
+			int randomInt = GeneticAlgorithm.LockedRandomInt(0, otherParent.Genes.Length - 1);
+			List<SolutionGene> geneListOne = new List<SolutionGene>();
+			List<SolutionGene> geneListTwo = new List<SolutionGene>();
+			geneListOne.AddRange(Genes.Take(randomInt));
+			geneListTwo.AddRange(otherParent.Genes.Take(randomInt));
+			geneListOne.AddRange(otherParent.Genes.Skip(randomInt));
+			geneListTwo.AddRange(Genes.Skip(randomInt));
+			child1.Genes = geneListOne.ToArray();
+			child2.Genes = geneListTwo.ToArray();
+
+			return new DNA[] { child1, child2 };
 		}
 
 		public void Mutate(float mutationRate) {

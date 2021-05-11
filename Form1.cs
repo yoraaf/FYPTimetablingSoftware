@@ -34,7 +34,6 @@ namespace FYPTimetablingSoftware {
         private Constraint[] SoftConstraints;
         private Constraint[] HardConstraints;
         private Stopwatch stopwatch = new Stopwatch();
-        //private string constraintResults = "";
         private string[] constraintResultsArr = new string[Program.PopulationSize];
         private long AverageTimePerGen = 0;
         public static int TotalConstraintNr;
@@ -57,7 +56,6 @@ namespace FYPTimetablingSoftware {
             InitializeComponent();
         }
         private void initAlgorithm() {
-            //string popSizeString = Program.PopulationSize.ToString();
             if(Program.CrossoverMethod == "Tournament") {
                 PropertiesString = "P_" + Program.PopulationSize.ToString().PadLeft(4, '0') + "-S_" + Program.SelectionMethod.PadRight(10, '-') + "-C_Tournament" + Program.TournamentRatio.ToString().PadRight(4,'0') + "-M_" + Program.MutationRate.ToString().PadRight(5, '0') + "_";
             } else {
@@ -106,7 +104,7 @@ namespace FYPTimetablingSoftware {
         }
 
         public void UpdateAlgorithm() {
-            if (!enabled) { return; } //if something paused or stopped the algorithm, don't update anymore
+            if (!enabled) { return; } //if something paused or stopped the algorithm, don't update 
             aRunning = true;
             ga.NewGeneration();
             try {
@@ -229,7 +227,6 @@ namespace FYPTimetablingSoftware {
             string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}",ts.Hours, ts.Minutes, ts.Seconds);
             TimeElapsedValueLbl.Text = elapsedTime;
 
-            //bestGeneBox.Text = CharArrayToString(bestGenes);
             fitnessLbl.Text = bestFitness.ToString();
             generationLbl.Text = generation.ToString();
             if(ga.Generation == 26) {
@@ -323,13 +320,39 @@ namespace FYPTimetablingSoftware {
         }
 
         private void TestButton2_Click(object sender, EventArgs e) {
-            for (int i = 0; i < ga.BestGenes.Length; i++) {
-                Debug.WriteLine(ga.BestGenes[i]);
+            Random r = new System.Random(666);
+            int[] arr = new int[10000000];
+            double fitnessBias = 2.5;
+            for (int i = 0; i < 10000000; i++) {
+                int index;
+                do {
+                    //index = r.Next(0, Program.PopulationSize) + r.Next(0, Program.PopulationSize) - Program.PopulationSize - 1; //-1 to prevent out of bounds
+                    index = (int)(Program.PopulationSize * (fitnessBias - Math.Sqrt(fitnessBias * fitnessBias - 4.0 * (fitnessBias - 1) * r.NextDouble())) / 2.0 / (fitnessBias - 1));
+                } while (index < 0);
+                arr[i] = index;
             }
-            Room a = XMLParser.GetRoomList()[0];
-            Room b = XMLParser.GetRoomList()[1];
-            int testDistance = a.CalculateRoomDistance(b);
-            Console.WriteLine("Distance between room 1 and 2: " + testDistance);
+
+            Dictionary<string, int> nums = new Dictionary<string, int>();
+            foreach(int x in arr) {
+                int y = (int)Math.Floor(x / 10.0);
+                if (nums.ContainsKey(y.ToString())) {
+                    nums[y.ToString()]++;
+                } else {
+                    nums.Add(y.ToString(), 1);
+                }
+            }
+            List<int> otherTest = new List<int>();
+            for(int i = 0; i < 50; i++) {
+                if (nums.ContainsKey(i.ToString())) {
+                    Debug.WriteLine("" + nums[i.ToString()]);
+                } else {
+                    otherTest.Add(i);
+                }
+            }
+
+            Debug.WriteLine("Numbers done");
         }
+
     }
 }
+

@@ -13,7 +13,7 @@ namespace FYPTimetablingSoftware {
         public static readonly int Elitism = 5;                 //default 5
         public static readonly string CrossoverMethod = "Discrete"; //Either Discrete or Violation
         public static readonly string SelectionMethod = "Tournament"; // Default is Tournament, also RankBased and SexBased and Random
-        public static readonly int FinalGeneration = 750; //-1 for no end
+        public static readonly int FinalGeneration = 500; //-1 for no end
 
         [STAThread]
         static void Main() {
